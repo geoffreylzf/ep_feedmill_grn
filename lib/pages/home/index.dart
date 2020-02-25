@@ -2,6 +2,7 @@ import 'package:ep_grn/animation/route_slide_right.dart';
 import 'package:ep_grn/notifiers/po_list_notifier.dart';
 import 'package:ep_grn/pages/doc_po/index.dart';
 import 'package:ep_grn/res/nav.dart';
+import 'package:ep_grn/utils/table.dart';
 import 'package:ep_grn/widgets/simple_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -175,7 +176,7 @@ class _POListState extends State<POList> {
                           TableRow(children: [
                             TableHeaderCell('Truck No'),
                             TableHeaderCell('Weight Bridge No'),
-                            TableHeaderCell('Remark'),
+                            TableHeaderCell('Weight Bridge Remark'),
                           ]),
                           TableRow(children: [
                             TableDetailCell(po.truckNo),
@@ -227,45 +228,5 @@ class _ErrorMessage extends StatelessWidget {
       }
     });
     return Container();
-  }
-}
-
-class TableHeaderCell extends StatelessWidget {
-  final String text;
-
-  TableHeaderCell(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.grey[400], fontSize: 8),
-      ),
-    );
-  }
-}
-
-class TableDetailCell extends StatelessWidget {
-  final String text;
-  final TextAlign textAlign;
-
-  TableDetailCell(
-    this.text, {
-    this.textAlign = TextAlign.center,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Text(
-        text,
-        textAlign: textAlign,
-        style: TextStyle(fontSize: 12),
-      ),
-    );
   }
 }

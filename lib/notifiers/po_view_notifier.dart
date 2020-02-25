@@ -1,5 +1,6 @@
 import 'package:ep_grn/models/doc_po.dart';
 import 'package:ep_grn/models/doc_po_detail.dart';
+import 'package:ep_grn/models/store.dart';
 import 'package:ep_grn/modules/api.dart';
 import 'package:ep_grn/utils/error.dart';
 import 'package:flutter/foundation.dart';
@@ -11,10 +12,16 @@ class POViewNotifier with ChangeNotifier {
 
   bool _isLoading = true;
   List<DocPODetail> _docPODetailList = [];
+  List<Store> _storeList = [];
+  Store _selectedStore;
 
   bool get isLoading => _isLoading;
 
   List<DocPODetail> get docPODetailList => _docPODetailList;
+
+  List<Store> get storeList => _storeList;
+
+  Store get selectedStore => _selectedStore;
 
   Stream<String> get errMsgStream => _errMsgSubject.stream;
 
@@ -30,15 +37,26 @@ class POViewNotifier with ChangeNotifier {
 
   _init() async {
     try {
-      final response = await Api().dio.get('',
+      final resPODetailList = await Api().dio.get('',
           queryParameters: {'r': 'apiMobileFmGrn/getdata', 'type': 'po_detail', 'id': docPO.id});
-      final data = Map<String, dynamic>.from(response.data);
-      _docPODetailList = List<DocPODetail>.from(data['list'].map((r) => DocPODetail.fromJson(r)));
+      final rpdl = Map<String, dynamic>.from(resPODetailList.data);
+      _docPODetailList = List<DocPODetail>.from(rpdl['list'].map((r) => DocPODetail.fromJson(r)));
+
+      final resStoreList =
+      await Api().dio.get('', queryParameters: {'r': 'apiMobileFmGrn/lookup', 'type': 'store'});
+      final rsl = Map<String, dynamic>.from(resStoreList.data);
+      _storeList = List<Store>.from(rsl['list'].map((r) => Store.fromJson(r)));
+
       _isLoading = false;
       notifyListeners();
     } catch (e) {
       _errMsgSubject.add(formatApiErrorMsg(e));
       _errMsgSubject.add(null);
     }
+  }
+
+  setSelectedStore(Store store) {
+    this._selectedStore = store;
+    notifyListeners();
   }
 }
