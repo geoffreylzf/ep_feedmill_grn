@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'doc_po_detail.g.dart';
 
 @JsonSerializable()
-class DocPODetail {
+class DocPoDetail {
   @JsonKey(name: 'doc_detail_id')
   int docDetailId;
   @JsonKey(name: 'item_packing_id')
@@ -28,7 +28,7 @@ class DocPODetail {
   @JsonKey(name: 'bal_weight')
   double balWeight;
 
-  DocPODetail({
+  DocPoDetail({
     this.docDetailId,
     this.itemPackingId,
     this.skuCode,
@@ -44,7 +44,7 @@ class DocPODetail {
     this.balWeight,
   });
 
-  factory DocPODetail.fromJson(Map<String, dynamic> json) => _$DocPODetailFromJson(json);
+  factory DocPoDetail.fromJson(Map<String, dynamic> json) => _$DocPoDetailFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DocPODetailToJson(this);
+  Map<String, dynamic> toJson() => _$DocPoDetailToJson(this);
 }

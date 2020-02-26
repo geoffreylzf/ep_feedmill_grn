@@ -6,13 +6,13 @@ import 'package:rxdart/rxdart.dart';
 
 class POListNotifier with ChangeNotifier {
   bool _isLoading = false;
-  List<DocPO> _docPOList = [];
+  List<DocPo> _docPOList = [];
 
   final _errMsgSubject = BehaviorSubject<String>.seeded(null);
 
   bool get isLoading => _isLoading;
 
-  List<DocPO> get docPOList => _docPOList;
+  List<DocPo> get docPOList => _docPOList;
 
   Stream<String> get errMsgStream => _errMsgSubject.stream;
 
@@ -35,7 +35,7 @@ class POListNotifier with ChangeNotifier {
         'type': 'po',
       });
       final data = Map<String, dynamic>.from(response.data);
-      final poList = List<DocPO>.from(data['list'].map((r) => DocPO.fromJson(r)));
+      final poList = List<DocPo>.from(data['list'].map((r) => DocPo.fromJson(r)));
       _docPOList = poList;
       _isLoading = false;
       notifyListeners();

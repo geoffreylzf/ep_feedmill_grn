@@ -1,16 +1,17 @@
+import 'package:ep_grn/animation/route_slide_right.dart';
 import 'package:ep_grn/models/doc_po.dart';
-import 'package:ep_grn/models/doc_po_detail.dart';
-import 'package:ep_grn/models/store.dart';
 import 'package:ep_grn/notifiers/po_view_notifier.dart';
-import 'package:ep_grn/utils/node.dart';
 import 'package:ep_grn/utils/table.dart';
+import 'package:ep_grn/widgets/simple_alert_dialog.dart';
+import 'package:ep_grn/widgets/simple_loading_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import 'detail.dart';
+
 class DocPOIndexPage extends StatefulWidget {
-  final DocPO docPO;
+  final DocPo docPO;
 
   DocPOIndexPage(this.docPO);
 
@@ -24,28 +25,35 @@ class _DocPOIndexPageState extends State<DocPOIndexPage> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => POViewNotifier(docPO: widget.docPO),
+          create: (_) => PoViewNotifier(docPO: widget.docPO),
         ),
       ],
       child: Scaffold(
         appBar: AppBar(
           title: Text("Purchase Order"),
         ),
-        body: Container(
-          color: Colors.grey[200],
-          child: ListView(
-            children: [
-              Container(height: 8),
-              POHeader(),
-              Container(height: 8),
-              POHeaderEntry(),
-              Container(height: 8),
-              PODetail(),
-              Container(height: 8),
-              ActionButton(),
-              Container(height: 8),
-            ],
-          ),
+        body: Stack(
+          children: [
+            ListView(
+              children: [
+                Container(height: 8, color: Colors.grey[200]),
+                POHeader(),
+                Container(height: 8, color: Colors.grey[200]),
+                POHeaderEntry(),
+                Container(height: 8, color: Colors.grey[200]),
+                ActionButton(),
+                Container(height: 8, color: Colors.grey[200]),
+                PODetail(),
+                Container(height: 8, color: Colors.grey[200]),
+              ],
+            ),
+            Consumer<PoViewNotifier>(
+              builder: (ctx, povn, _) {
+                return SimpleLoadingDialog(povn.isLoading);
+              },
+            ),
+            _ErrorMessage(),
+          ],
         ),
       ),
     );
@@ -55,7 +63,7 @@ class _DocPOIndexPageState extends State<DocPOIndexPage> {
 class POHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final po = Provider.of<POViewNotifier>(context).docPO;
+    final po = Provider.of<PoViewNotifier>(context).docPO;
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16),
@@ -161,20 +169,26 @@ class POHeaderEntry extends StatefulWidget {
 }
 
 class _POHeaderEntryState extends State<POHeaderEntry> {
-  final remarkTec = TextEditingController();
   final refNoTec = TextEditingController();
-  final storeTec = TextEditingController();
+  final remarkTec = TextEditingController();
 
   @override
   void dispose() {
-    remarkTec.dispose();
     refNoTec.dispose();
-    storeTec.dispose();
+    remarkTec.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    refNoTec.addListener(() {
+      Provider.of<PoViewNotifier>(context, listen: false).refNo = refNoTec.text;
+    });
+
+    remarkTec.addListener(() {
+      Provider.of<PoViewNotifier>(context, listen: false).remark = remarkTec.text;
+    });
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16),
@@ -205,11 +219,11 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
                   hint: Text("Store"),
                   isExpanded: true,
                   elevation: 16,
-                  value: Provider.of<POViewNotifier>(context).selectedStore,
+                  value: Provider.of<PoViewNotifier>(context).selectedStore,
                   onChanged: (v) {
-                    Provider.of<POViewNotifier>(context, listen: false).setSelectedStore(v);
+                    Provider.of<PoViewNotifier>(context, listen: false).setSelectedStore(v);
                   },
-                  items: Provider.of<POViewNotifier>(context).storeList.map(
+                  items: Provider.of<PoViewNotifier>(context).storeList.map(
                     (store) {
                       return DropdownMenuItem(
                         value: store,
@@ -249,226 +263,148 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
 class PODetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dtList = Provider.of<POViewNotifier>(context).docPODetailList;
+    final dtList = Provider.of<PoViewNotifier>(context).docPODetailList;
 
     return Container(
-      color: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: dtList.length,
         separatorBuilder: (ctx, index) {
-          return Divider();
+          return Divider(height: 1, thickness: 1);
         },
         itemBuilder: (ctx, index) {
           final dt = dtList[index];
-          return Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: new BoxDecoration(
-                      color: Theme.of(context).accentColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        (index + 1).toString(),
-                        style: TextStyle(color: Colors.white),
+          final grnDt = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
+          return InkWell(
+            splashColor: Theme.of(context).accentColor,
+            onTap: dt.balQty <= 0
+                ? null
+                : () async {
+                    await Future.delayed(Duration(milliseconds: 100));
+                    Provider.of<PoViewNotifier>(
+                      context,
+                      listen: false,
+                    ).setSelectedDocPODetail(dt);
+                    Navigator.push(
+                      context,
+                      SlideRightRoute(
+                        widget: DocPoDetailPage(
+                          Provider.of<PoViewNotifier>(
+                            context,
+                            listen: false,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+            child: Container(
+              color: dt.balQty <= 0 ? Colors.transparent : Colors.lightGreen[50].withOpacity(0.8),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: new BoxDecoration(
+                        color: Theme.of(context).accentColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          (index + 1).toString(),
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              dt.skuName,
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              dt.uomDesc,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(color: Colors.grey, fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Row(
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Row(
                           children: [
                             Expanded(
-                              flex: 1,
-                              child: PODetailCalculation(dt),
+                              child: Column(
+                                children: <Widget>[
+                                  Text(dt.skuName, style: TextStyle(fontWeight: FontWeight.w700)),
+                                  Text(dt.skuCode,
+                                      style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+                                  Text(dt.uomDesc,
+                                      style: TextStyle(color: Colors.grey[600], fontSize: 12))
+                                ],
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                              ),
                             ),
-                            Container(width: 8),
                             Expanded(
-                              flex: 2,
-                              child: PODetailEntry(dt),
+                              child: grnDt == null
+                                  ? Container()
+                                  : Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                grnDt.qty.toString() + ' ' + (dt.uomCode ?? ''),
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.green[800],
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                grnDt.weight.toString() + ' Kg',
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.green[800],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                grnDt.expiredDate,
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.green[800],
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                grnDt.refWeight.toString() + ' Kg',
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.green[800],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ],
                         ),
-                      )
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
       ),
-    );
-  }
-}
-
-class PODetailCalculation extends StatelessWidget {
-  final DocPODetail docPODetail;
-
-  PODetailCalculation(this.docPODetail);
-
-  @override
-  Widget build(BuildContext context) {
-    return Table(
-      border: TableBorder.all(color: Colors.grey[300]),
-      columnWidths: {
-        0: FractionColumnWidth(0.2),
-        1: FractionColumnWidth(0.4),
-        2: FractionColumnWidth(0.4),
-      },
-      children: [
-        TableRow(children: [
-          TableHeaderCell(''),
-          TableHeaderCell('Qty (${docPODetail.uomCode})'),
-          TableHeaderCell('Weight (Kg)'),
-        ]),
-        TableRow(children: [
-          TableDetailCell("PO"),
-          TableDetailCell(docPODetail.qty.toString(), textAlign: TextAlign.right),
-          TableDetailCell(docPODetail.weight.toString(), textAlign: TextAlign.right),
-        ]),
-        TableRow(children: [
-          TableDetailCell("GRN"),
-          TableDetailCell(docPODetail.grnQty.toString(), textAlign: TextAlign.right),
-          TableDetailCell(docPODetail.grnWeight.toString(), textAlign: TextAlign.right),
-        ]),
-        TableRow(
-          decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.black))),
-          children: [
-            TableDetailCell("Bal."),
-            TableDetailCell(docPODetail.balQty.toString(), textAlign: TextAlign.right),
-            TableDetailCell(docPODetail.balWeight.toString(), textAlign: TextAlign.right),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class PODetailEntry extends StatefulWidget {
-  final DocPODetail docPODetail;
-
-  PODetailEntry(this.docPODetail);
-
-  @override
-  _PODetailEntryState createState() => _PODetailEntryState();
-}
-
-class _PODetailEntryState extends State<PODetailEntry> {
-  final dateFormat = DateFormat('yyyy-MM-dd');
-
-  final qtyTec = TextEditingController();
-  final weightTec = TextEditingController();
-  final refWeightTec = TextEditingController();
-  final expiredDateTec = TextEditingController();
-
-  @override
-  void dispose() {
-    qtyTec.dispose();
-    weightTec.dispose();
-    refWeightTec.dispose();
-    expiredDateTec.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.docPODetail.balQty <= 0) {
-      return Container();
-    }
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: qtyTec,
-                autofocus: true,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Received Qty",
-                  contentPadding: EdgeInsets.all(16),
-                ),
-              ),
-            ),
-            Container(width: 8),
-            Expanded(
-              child: TextField(
-                controller: weightTec,
-                autofocus: true,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Received Weight",
-                  contentPadding: EdgeInsets.all(16),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Container(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: expiredDateTec,
-                autofocus: true,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Expired Date",
-                  contentPadding: EdgeInsets.all(16),
-                ),
-              ),
-            ),
-            Container(width: 8),
-            Expanded(
-              child: TextField(
-                controller: refWeightTec,
-                autofocus: true,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Ref Weight",
-                  contentPadding: EdgeInsets.all(16),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
@@ -482,8 +418,28 @@ class ActionButton extends StatelessWidget {
       child: RaisedButton(
           child: Text("CONFIRM"),
           onPressed: () {
-            print("asasa");
+            Provider.of<PoViewNotifier>(context, listen: false).saveGrn();
           }),
     );
+  }
+}
+
+class _ErrorMessage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Provider.of<PoViewNotifier>(context, listen: false).errMsgStream.listen((errMsg) {
+      if (errMsg != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return SimpleAlertDialog(
+              title: 'Error',
+              message: errMsg,
+            );
+          },
+        );
+      }
+    });
+    return Container();
   }
 }

@@ -6,8 +6,8 @@ part of 'doc_po_detail.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DocPODetail _$DocPODetailFromJson(Map<String, dynamic> json) {
-  return DocPODetail(
+DocPoDetail _$DocPoDetailFromJson(Map<String, dynamic> json) {
+  return DocPoDetail(
     docDetailId: json['doc_detail_id'] as int,
     itemPackingId: json['item_packing_id'] as int,
     skuCode: json['sku_code'] as String,
@@ -24,7 +24,7 @@ DocPODetail _$DocPODetailFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$DocPODetailToJson(DocPODetail instance) =>
+Map<String, dynamic> _$DocPoDetailToJson(DocPoDetail instance) =>
     <String, dynamic>{
       'doc_detail_id': instance.docDetailId,
       'item_packing_id': instance.itemPackingId,

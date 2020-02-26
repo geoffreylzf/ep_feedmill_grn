@@ -12,7 +12,7 @@ class TableHeaderCell extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.grey[500], fontSize: 8),
+        style: TextStyle(color: Colors.grey[600], fontSize: 10),
       ),
     );
   }

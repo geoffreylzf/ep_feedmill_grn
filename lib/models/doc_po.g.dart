@@ -6,8 +6,8 @@ part of 'doc_po.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DocPO _$DocPOFromJson(Map<String, dynamic> json) {
-  return DocPO(
+DocPo _$DocPoFromJson(Map<String, dynamic> json) {
+  return DocPo(
     id: json['id'] as int,
     docNo: json['doc_no'] as String,
     docDate: json['doc_date'] as String,
@@ -28,7 +28,7 @@ DocPO _$DocPOFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$DocPOToJson(DocPO instance) => <String, dynamic>{
+Map<String, dynamic> _$DocPoToJson(DocPo instance) => <String, dynamic>{
       'id': instance.id,
       'doc_no': instance.docNo,
       'doc_date': instance.docDate,

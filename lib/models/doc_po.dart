@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'doc_po.g.dart';
 
 @JsonSerializable()
-class DocPO {
+class DocPo {
   int id;
   @JsonKey(name: 'doc_no')
   String docNo;
@@ -37,7 +37,7 @@ class DocPO {
   String weightBridgeNo;
   String remark;
 
-  DocPO({
+  DocPo({
     this.id,
     this.docNo,
     this.docDate,
@@ -57,7 +57,7 @@ class DocPO {
     this.remark,
   });
 
-  factory DocPO.fromJson(Map<String, dynamic> json) => _$DocPOFromJson(json);
+  factory DocPo.fromJson(Map<String, dynamic> json) => _$DocPoFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DocPOToJson(this);
+  Map<String, dynamic> toJson() => _$DocPoToJson(this);
 }
