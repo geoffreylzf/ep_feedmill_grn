@@ -1,5 +1,6 @@
 import 'package:ep_grn/animation/route_slide_right.dart';
 import 'package:ep_grn/models/doc_po.dart';
+import 'package:ep_grn/notifiers/po_list_notifier.dart';
 import 'package:ep_grn/notifiers/po_view_notifier.dart';
 import 'package:ep_grn/utils/table.dart';
 import 'package:ep_grn/widgets/simple_alert_dialog.dart';
@@ -115,7 +116,7 @@ class POHeader extends StatelessWidget {
                   children: [
                     Text(
                       po.supplierName,
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 4.0),
@@ -417,8 +418,13 @@ class ActionButton extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: RaisedButton(
           child: Text("CONFIRM"),
-          onPressed: () {
-            Provider.of<PoViewNotifier>(context, listen: false).saveGrn();
+          onPressed: () async {
+            final success = await Provider.of<PoViewNotifier>(context, listen: false).saveGrn();
+
+            if(success){
+              Provider.of<POListNotifier>(context, listen: false).refreshPOList();
+              Navigator.of(context).pop();
+            }
           }),
     );
   }

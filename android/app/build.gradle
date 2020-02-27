@@ -62,6 +62,10 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
+
+    implementation 'com.google.zxing:core:3.3.3'
+    implementation 'com.akexorcist:bluetoothspp:1.0.0'
+    
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 }

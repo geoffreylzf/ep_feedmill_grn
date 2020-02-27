@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:ep_grn/models/doc_po.dart';
 import 'package:ep_grn/models/doc_po_detail.dart';
+import 'package:ep_grn/models/grn.dart';
 import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/models/store.dart';
 import 'package:ep_grn/modules/api.dart';
 import 'package:ep_grn/utils/error.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PoViewNotifier with ChangeNotifier {
@@ -91,21 +95,53 @@ class PoViewNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  saveGrn(){
-    if(refNo == '' || refNo == null){
+  Future<bool> saveGrn() async {
+    if (refNo == '' || refNo == null) {
       _errMsgSubject.add('Please enter supplier ref / DO');
       _errMsgSubject.add(null);
-      return;
+      return false;
     }
-    if(_selectedStore == null){
+    if (_selectedStore == null) {
       _errMsgSubject.add('Please select store');
       _errMsgSubject.add(null);
-      return;
+      return false;
     }
-    if(remark == '' || remark == null){
+    if (remark == '' || remark == null) {
       _errMsgSubject.add('Please enter remark');
       _errMsgSubject.add(null);
-      return;
+      return false;
+    }
+
+    if (_grnDetailList.length == 0){
+      _errMsgSubject.add('Please receive atleast 1 item');
+      _errMsgSubject.add(null);
+      return false;
+    }
+    final grn = Grn(
+      companyId: docPO.companyId,
+      docPoId: docPO.id,
+      docPoCheckId: docPO.docPoCheckId,
+      refNo: refNo,
+      storeId: _selectedStore.id,
+      remark: remark,
+      details: _grnDetailList,
+    );
+
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final grnJson = {'grn': grn.toJson()};
+      print(json.encode(grnJson));
+      await Api().dio.post('', queryParameters: {'r': 'apiMobileFmGrn/saveGrn'}, data: grnJson);
+      Fluttertoast.showToast(msg: "GRN saved");
+      return true;
+    } catch (e) {
+      _errMsgSubject.add(formatApiErrorMsg(e));
+      _errMsgSubject.add(null);
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 }

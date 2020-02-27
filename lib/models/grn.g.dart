@@ -8,7 +8,7 @@ part of 'grn.dart';
 
 Grn _$GrnFromJson(Map<String, dynamic> json) {
   return Grn(
-    companyId: json['companyId'] as int,
+    companyId: json['company_id'] as int,
     docPoId: json['doc_po_id'] as int,
     docPoCheckId: json['doc_po_check_id'] as int,
     storeId: json['store_id'] as int,
@@ -22,7 +22,7 @@ Grn _$GrnFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$GrnToJson(Grn instance) => <String, dynamic>{
-      'companyId': instance.companyId,
+      'company_id': instance.companyId,
       'doc_po_id': instance.docPoId,
       'doc_po_check_id': instance.docPoCheckId,
       'store_id': instance.storeId,

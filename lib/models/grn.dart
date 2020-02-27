@@ -6,7 +6,7 @@ part 'grn.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Grn {
-  @JsonKey(name: 'companyId')
+  @JsonKey(name: 'company_id')
   int companyId;
   @JsonKey(name: 'doc_po_id')
   int docPoId;

@@ -143,7 +143,7 @@ class _POListState extends State<POList> {
                               children: [
                                 Text(
                                   po.supplierName,
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
@@ -193,13 +193,15 @@ class _POListState extends State<POList> {
                 child: new Material(
                   color: Colors.transparent,
                   child: new InkWell(
-                    onTap: () async {
-                      await Future.delayed(Duration(milliseconds: 100));
-                      Navigator.push(
-                        context,
-                        SlideRightRoute(widget: DocPOIndexPage(po)),
-                      );
-                    },
+                    onTap: Provider.of<POListNotifier>(context).isLoading
+                        ? null
+                        : () async {
+                            await Future.delayed(Duration(milliseconds: 100));
+                            Navigator.push(
+                              context,
+                              SlideRightRoute(widget: DocPOIndexPage(po)),
+                            );
+                          },
                   ),
                 ),
               )
