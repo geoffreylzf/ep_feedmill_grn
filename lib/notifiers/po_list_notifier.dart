@@ -23,10 +23,10 @@ class POListNotifier with ChangeNotifier {
   }
 
   POListNotifier() {
-    refreshPOList();
+    fetchPoList();
   }
 
-  refreshPOList() async {
+  fetchPoList() async {
     try {
       _isLoading = true;
       notifyListeners();

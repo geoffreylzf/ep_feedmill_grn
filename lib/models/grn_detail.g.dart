@@ -12,7 +12,6 @@ GrnDetail _$GrnDetailFromJson(Map<String, dynamic> json) {
     itemPackingId: json['item_packing_id'] as int,
     qty: (json['qty'] as num)?.toDouble(),
     weight: (json['weight'] as num)?.toDouble(),
-    refWeight: (json['ref_weight'] as num)?.toDouble(),
     expiredDate: json['expired_date'] as String,
   );
 }
@@ -22,6 +21,5 @@ Map<String, dynamic> _$GrnDetailToJson(GrnDetail instance) => <String, dynamic>{
       'item_packing_id': instance.itemPackingId,
       'qty': instance.qty,
       'weight': instance.weight,
-      'ref_weight': instance.refWeight,
       'expired_date': instance.expiredDate,
     };

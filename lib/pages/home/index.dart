@@ -66,7 +66,7 @@ class _POListRefresherState extends State<POListRefresher> {
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () async {
-        await Provider.of<POListNotifier>(context, listen: false).refreshPOList();
+        await Provider.of<POListNotifier>(context, listen: false).fetchPoList();
       },
       child: POList(),
     );

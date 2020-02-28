@@ -16,6 +16,10 @@ class Grn {
   int storeId;
   @JsonKey(name: 'ref_no')
   String refNo;
+  @JsonKey(name: 'container_ttl')
+  int containerTtl;
+  @JsonKey(name: 'sample_bag_ttl')
+  int sampleBagTtl;
   @JsonKey(name: 'remark')
   String remark;
   List<GrnDetail> details;
@@ -26,6 +30,8 @@ class Grn {
     this.docPoCheckId,
     this.storeId,
     this.refNo,
+    this.containerTtl,
+    this.sampleBagTtl,
     this.remark,
     this.details,
   });

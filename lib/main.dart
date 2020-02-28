@@ -6,14 +6,19 @@ import 'package:ep_grn/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() => runApp(MultiProvider(providers: [
-      ChangeNotifierProvider(
-        create: (_) => UserRepositoryNotifier(),
+void main() => runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => UserRepositoryNotifier(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => POListNotifier(),
+          ),
+        ],
+        child: MyApp(),
       ),
-      ChangeNotifierProvider(
-        create: (_) => POListNotifier(),
-      ),
-    ], child: MyApp()));
+    );
 
 class MyApp extends StatelessWidget {
   @override

@@ -10,8 +10,6 @@ class GrnDetail {
   int itemPackingId;
   double qty;
   double weight;
-  @JsonKey(name: 'ref_weight')
-  double refWeight;
   @JsonKey(name: 'expired_date')
   String expiredDate;
 
@@ -25,7 +23,6 @@ class GrnDetail {
     this.itemPackingId,
     this.qty,
     this.weight,
-    this.refWeight,
     this.expiredDate,
     this.skuCode,
     this.skuName,

@@ -1,6 +1,5 @@
 import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/notifiers/po_view_notifier.dart';
-import 'package:ep_grn/utils/node.dart';
 import 'package:ep_grn/utils/table.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +23,7 @@ class _DocPoDetailPageState extends State<DocPoDetailPage> {
         appBar: AppBar(
           title: Text("Purchase Order Detail"),
         ),
-        body: ListView(children: [DetailInfo(), DetailEntry()]),
+        body: ListView(children: [DetailInfo(), Container(height: 8), DetailEntry()]),
       ),
     );
   }
@@ -93,14 +92,12 @@ class _DetailEntryState extends State<DetailEntry> {
 
   final tecQty = TextEditingController();
   final tecWeight = TextEditingController();
-  final tecRefWeight = TextEditingController();
   final tecExpiredDate = TextEditingController();
 
   @override
   void dispose() {
     tecQty.dispose();
     tecWeight.dispose();
-    tecRefWeight.dispose();
     tecExpiredDate.dispose();
     super.dispose();
   }
@@ -108,13 +105,12 @@ class _DetailEntryState extends State<DetailEntry> {
   @override
   Widget build(BuildContext context) {
     final dt = Provider.of<PoViewNotifier>(context).selectedDocPODetail;
-    final grnDt  = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
+    final grnDt = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
 
-    if(grnDt != null){
+    if (grnDt != null) {
       tecQty.text = grnDt.qty.toString();
       tecWeight.text = grnDt.weight.toString();
       tecExpiredDate.text = grnDt.expiredDate.toString();
-      tecRefWeight.text = grnDt.refWeight.toString();
     }
 
     tecQty.addListener(() {
@@ -182,16 +178,13 @@ class _DetailEntryState extends State<DetailEntry> {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: tecExpiredDate,
-                    enableInteractiveSelection: false,
-                    focusNode: AlwaysDisabledFocusNode(),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Expired Date",
-                      contentPadding: EdgeInsets.all(16),
-                    ),
-                    onTap: () async {
+                  child: Container(),
+                ),
+                Container(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () async{
                       final selectedDate = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
@@ -203,60 +196,62 @@ class _DetailEntryState extends State<DetailEntry> {
                         tecExpiredDate.text = dateFormat.format(selectedDate);
                       }
                     },
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Cannot blank";
-                      }
-                      return null;
+                    child: TextFormField(
+                      controller: tecExpiredDate,
+                      enabled: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Expired Date",
+                        contentPadding: EdgeInsets.all(16),
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Cannot blank";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Container(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: RaisedButton.icon(
+                    icon: Icon(Icons.delete),
+                    label: Text("DELETE"),
+                    onPressed: () {
+                      Provider.of<PoViewNotifier>(context, listen: false).removeGrnDetail(grnDt);
+                      Navigator.of(context).pop();
                     },
                   ),
                 ),
                 Container(width: 8),
                 Expanded(
-                  child: TextFormField(
-                    controller: tecRefWeight,
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Ref Weight",
-                      contentPadding: EdgeInsets.all(16),
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Cannot blank";
+                  child: RaisedButton.icon(
+                    icon: Icon(Icons.save),
+                    label: Text("SAVE"),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        final grnDetail = GrnDetail(
+                          docDetailId: dt.docDetailId,
+                          itemPackingId: dt.itemPackingId,
+                          qty: double.tryParse(tecQty.text),
+                          weight: double.tryParse(tecWeight.text),
+                          expiredDate: tecExpiredDate.text,
+                          skuCode: dt.skuCode,
+                          skuName: dt.skuName,
+                        );
+
+                        Provider.of<PoViewNotifier>(context, listen: false).addGrnDetail(grnDetail);
+                        Navigator.of(context).pop();
                       }
-                      if (double.tryParse(value) == null) {
-                        return "Number only";
-                      }
-                      return null;
                     },
                   ),
                 ),
               ],
-            ),
-            Container(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: RaisedButton(
-                child: Text("SAVE"),
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    final grnDetail = GrnDetail(
-                      docDetailId: dt.docDetailId,
-                      itemPackingId: dt.itemPackingId,
-                      qty: double.tryParse(tecQty.text),
-                      weight: double.tryParse(tecWeight.text),
-                      expiredDate: tecExpiredDate.text,
-                      refWeight: double.tryParse(tecRefWeight.text),
-                      skuCode: dt.skuCode,
-                      skuName: dt.skuName,
-                    );
-
-                    Provider.of<PoViewNotifier>(context, listen: false).addGrnDetail(grnDetail);
-                    Navigator.of(context).pop();
-                  }
-                },
-              ),
             )
           ],
         ),

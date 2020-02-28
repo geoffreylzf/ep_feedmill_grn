@@ -2,6 +2,7 @@ import 'package:ep_grn/animation/route_slide_right.dart';
 import 'package:ep_grn/models/doc_po.dart';
 import 'package:ep_grn/notifiers/po_list_notifier.dart';
 import 'package:ep_grn/notifiers/po_view_notifier.dart';
+import 'package:ep_grn/pages/doc_po/add_detail.dart';
 import 'package:ep_grn/utils/table.dart';
 import 'package:ep_grn/widgets/simple_alert_dialog.dart';
 import 'package:ep_grn/widgets/simple_loading_dialog.dart';
@@ -170,24 +171,38 @@ class POHeaderEntry extends StatefulWidget {
 }
 
 class _POHeaderEntryState extends State<POHeaderEntry> {
-  final refNoTec = TextEditingController();
-  final remarkTec = TextEditingController();
+  final tecRefNo = TextEditingController();
+  final tecContainerTtl = TextEditingController();
+  final tecSampleBagTtl = TextEditingController();
+  final tecRemark = TextEditingController();
 
   @override
   void dispose() {
-    refNoTec.dispose();
-    remarkTec.dispose();
+    tecRefNo.dispose();
+    tecContainerTtl.dispose();
+    tecSampleBagTtl.dispose();
+    tecRemark.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    refNoTec.addListener(() {
-      Provider.of<PoViewNotifier>(context, listen: false).refNo = refNoTec.text;
+    tecRefNo.addListener(() {
+      Provider.of<PoViewNotifier>(context, listen: false).refNo = tecRefNo.text;
     });
 
-    remarkTec.addListener(() {
-      Provider.of<PoViewNotifier>(context, listen: false).remark = remarkTec.text;
+    tecContainerTtl.addListener(() {
+      Provider.of<PoViewNotifier>(context, listen: false).containerTtl =
+          int.tryParse(tecContainerTtl.text);
+    });
+
+    tecSampleBagTtl.addListener(() {
+      Provider.of<PoViewNotifier>(context, listen: false).sampleBagTtl =
+          int.tryParse(tecSampleBagTtl.text);
+    });
+
+    tecRemark.addListener(() {
+      Provider.of<PoViewNotifier>(context, listen: false).remark = tecRemark.text;
     });
 
     return Container(
@@ -205,7 +220,7 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
               Expanded(
                 child: TextField(
                   autofocus: true,
-                  controller: refNoTec,
+                  controller: tecRefNo,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -245,8 +260,38 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
             ],
           ),
           Container(height: 8),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: TextField(
+                  autofocus: true,
+                  controller: tecContainerTtl,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Container Total',
+                    contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  ),
+                ),
+              ),
+              Container(width: 8),
+              Expanded(
+                child: TextField(
+                  autofocus: true,
+                  controller: tecSampleBagTtl,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Sample Bag Total',
+                    contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(height: 8),
           TextField(
-            controller: remarkTec,
+            controller: tecRemark,
             keyboardType: TextInputType.text,
             maxLength: 100,
             decoration: InputDecoration(
@@ -370,19 +415,10 @@ class PODetail extends StatelessWidget {
                                         ),
                                         Row(
                                           children: [
+                                            Expanded(child: Container()),
                                             Expanded(
                                               child: Text(
                                                 grnDt.expiredDate,
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.green[800],
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                grnDt.refWeight.toString() + ' Kg',
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w700,
@@ -416,16 +452,68 @@ class ActionButton extends StatelessWidget {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16),
-      child: RaisedButton(
-          child: Text("CONFIRM"),
-          onPressed: () async {
-            final success = await Provider.of<PoViewNotifier>(context, listen: false).saveGrn();
+      child: Row(
+        children: [
+          Expanded(
+            child: RaisedButton.icon(
+              icon: Icon(Icons.add),
+              label: Text("ADD NEW ITEM"),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  SlideRightRoute(
+                    widget: DocPoAddDetailPage(
+                      Provider.of<PoViewNotifier>(
+                        context,
+                        listen: false,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(width: 8),
+          Expanded(
+            child: RaisedButton(
+              child: Text("CREATE GRN"),
+              onPressed: () async {
+                final check = await Provider.of<PoViewNotifier>(context, listen: false).preSaveGrn();
+                if (check) {
+                  showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return AlertDialog(
+                          title: Text('Create GRN'),
+                          content: Text('Are you confirrm ?'),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () => Navigator.of(ctx).pop(false),
+                              child: new Text('CANCEL'),
+                            ),
+                            FlatButton(
+                              onPressed: () async {
+                                Navigator.of(ctx).pop(true);
+                                final success =
+                                    await Provider.of<PoViewNotifier>(context, listen: false)
+                                        .saveGrn();
 
-            if(success){
-              Provider.of<POListNotifier>(context, listen: false).refreshPOList();
-              Navigator.of(context).pop();
-            }
-          }),
+                                if (success) {
+                                  Provider.of<POListNotifier>(context, listen: false).fetchPoList();
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              child: Text('EXIT'),
+                            ),
+                          ],
+                        );
+                      });
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

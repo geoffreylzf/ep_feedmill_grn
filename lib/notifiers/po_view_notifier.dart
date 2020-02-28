@@ -23,6 +23,7 @@ class PoViewNotifier with ChangeNotifier {
   List<GrnDetail> _grnDetailList = [];
 
   String refNo = '', remark = '';
+  int containerTtl, sampleBagTtl;
 
   bool get isLoading => _isLoading;
 
@@ -95,34 +96,66 @@ class PoViewNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> saveGrn() async {
+  removeGrnDetail(GrnDetail grnDetail) {
+    _grnDetailList.removeWhere((g) {
+      return g.docDetailId == grnDetail.docDetailId && g.itemPackingId == grnDetail.itemPackingId;
+    });
+    notifyListeners();
+  }
+
+  Future<bool> preSaveGrn() async {
     if (refNo == '' || refNo == null) {
       _errMsgSubject.add('Please enter supplier ref / DO');
       _errMsgSubject.add(null);
       return false;
     }
+
     if (_selectedStore == null) {
       _errMsgSubject.add('Please select store');
       _errMsgSubject.add(null);
       return false;
     }
+
+    if (containerTtl == 0 || containerTtl == null) {
+      _errMsgSubject.add('Please enter container total');
+      _errMsgSubject.add(null);
+      return false;
+    }
+
+    if (sampleBagTtl == 0 || sampleBagTtl == null) {
+      _errMsgSubject.add('Please enter container total');
+      _errMsgSubject.add(null);
+      return false;
+    }
+
     if (remark == '' || remark == null) {
       _errMsgSubject.add('Please enter remark');
       _errMsgSubject.add(null);
       return false;
     }
 
-    if (_grnDetailList.length == 0){
+    if (_grnDetailList.length == 0) {
       _errMsgSubject.add('Please receive atleast 1 item');
       _errMsgSubject.add(null);
       return false;
     }
+    return true;
+  }
+
+  Future<bool> saveGrn() async {
+    final check = await preSaveGrn();
+    if (!check) {
+      return false;
+    }
+
     final grn = Grn(
       companyId: docPO.companyId,
       docPoId: docPO.id,
       docPoCheckId: docPO.docPoCheckId,
       refNo: refNo,
       storeId: _selectedStore.id,
+      containerTtl: containerTtl,
+      sampleBagTtl: sampleBagTtl,
       remark: remark,
       details: _grnDetailList,
     );
