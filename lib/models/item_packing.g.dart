@@ -12,6 +12,7 @@ ItemPacking _$ItemPackingFromJson(Map<String, dynamic> json) {
     skuCode: json['sku_code'] as String,
     skuName: json['sku_name'] as String,
     uomDesc: json['uom_desc'] as String,
+    uomCode: json['uom_code'] as String,
     factor: (json['factor'] as num)?.toDouble(),
   );
 }
@@ -22,5 +23,6 @@ Map<String, dynamic> _$ItemPackingToJson(ItemPacking instance) =>
       'sku_code': instance.skuCode,
       'sku_name': instance.skuName,
       'uom_desc': instance.uomDesc,
+      'uom_code': instance.uomCode,
       'factor': instance.factor,
     };

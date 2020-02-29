@@ -56,4 +56,9 @@ class GrnAddDetailNotifier with ChangeNotifier {
     this._selectedItemPacking = ip;
     notifyListeners();
   }
+
+  showError(String err) {
+    _errMsgSubject.add(err);
+    _errMsgSubject.add(null);
+  }
 }

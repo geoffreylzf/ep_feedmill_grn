@@ -1,3 +1,4 @@
+import 'package:ep_grn/models/doc_po_detail.dart';
 import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/notifiers/po_view_notifier.dart';
 import 'package:ep_grn/utils/table.dart';
@@ -94,6 +95,21 @@ class _DetailEntryState extends State<DetailEntry> {
   final tecWeight = TextEditingController();
   final tecExpiredDate = TextEditingController();
 
+  DocPoDetail dt;
+
+  @override
+  void initState() {
+    super.initState();
+    tecQty.addListener(() {
+      final qty = double.tryParse(tecQty.text);
+      if (qty != null) {
+        tecWeight.text = (qty * dt.factor).toString();
+      } else {
+        tecWeight.text = "";
+      }
+    });
+  }
+
   @override
   void dispose() {
     tecQty.dispose();
@@ -104,7 +120,8 @@ class _DetailEntryState extends State<DetailEntry> {
 
   @override
   Widget build(BuildContext context) {
-    final dt = Provider.of<PoViewNotifier>(context).selectedDocPODetail;
+    dt = Provider.of<PoViewNotifier>(context).selectedDocPODetail;
+
     final grnDt = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
 
     if (grnDt != null) {
@@ -112,15 +129,6 @@ class _DetailEntryState extends State<DetailEntry> {
       tecWeight.text = grnDt.weight.toString();
       tecExpiredDate.text = grnDt.expiredDate.toString();
     }
-
-    tecQty.addListener(() {
-      final qty = double.tryParse(tecQty.text);
-      if (qty != null) {
-        tecWeight.text = (qty * dt.factor).toString();
-      } else {
-        tecWeight.text = "";
-      }
-    });
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -184,7 +192,7 @@ class _DetailEntryState extends State<DetailEntry> {
                 Expanded(
                   child: GestureDetector(
                     behavior: HitTestBehavior.translucent,
-                    onTap: () async{
+                    onTap: () async {
                       final selectedDate = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
@@ -203,6 +211,9 @@ class _DetailEntryState extends State<DetailEntry> {
                         border: OutlineInputBorder(),
                         labelText: "Expired Date",
                         contentPadding: EdgeInsets.all(16),
+                        errorStyle: TextStyle(
+                          color: Theme.of(context).errorColor, // or any other color
+                        ),
                       ),
                       validator: (value) {
                         if (value.isEmpty) {
@@ -223,7 +234,9 @@ class _DetailEntryState extends State<DetailEntry> {
                     icon: Icon(Icons.delete),
                     label: Text("DELETE"),
                     onPressed: () {
-                      Provider.of<PoViewNotifier>(context, listen: false).removeGrnDetail(grnDt);
+                      if (grnDt != null) {
+                        Provider.of<PoViewNotifier>(context, listen: false).removeGrnDetail(grnDt);
+                      }
                       Navigator.of(context).pop();
                     },
                   ),
@@ -243,6 +256,8 @@ class _DetailEntryState extends State<DetailEntry> {
                           expiredDate: tecExpiredDate.text,
                           skuCode: dt.skuCode,
                           skuName: dt.skuName,
+                          uomCode: dt.uomCode,
+                          uomDesc: dt.uomDesc,
                         );
 
                         Provider.of<PoViewNotifier>(context, listen: false).addGrnDetail(grnDetail);

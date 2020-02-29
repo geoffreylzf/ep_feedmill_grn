@@ -43,9 +43,11 @@ class _DocPOIndexPageState extends State<DocPOIndexPage> {
                 Container(height: 8, color: Colors.grey[200]),
                 POHeaderEntry(),
                 Container(height: 8, color: Colors.grey[200]),
-                ActionButton(),
-                Container(height: 8, color: Colors.grey[200]),
                 PODetail(),
+                Container(height: 8, color: Colors.grey[200]),
+                NewGrnDetail(),
+                Container(height: 8, color: Colors.grey[200]),
+                ActionButton(),
                 Container(height: 8, color: Colors.grey[200]),
               ],
             ),
@@ -312,135 +314,293 @@ class PODetail extends StatelessWidget {
     final dtList = Provider.of<PoViewNotifier>(context).docPODetailList;
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: dtList.length,
-        separatorBuilder: (ctx, index) {
-          return Divider(height: 1, thickness: 1);
-        },
-        itemBuilder: (ctx, index) {
-          final dt = dtList[index];
-          final grnDt = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
-          return InkWell(
-            splashColor: Theme.of(context).accentColor,
-            onTap: dt.balQty <= 0
-                ? null
-                : () async {
-                    await Future.delayed(Duration(milliseconds: 100));
-                    Provider.of<PoViewNotifier>(
-                      context,
-                      listen: false,
-                    ).setSelectedDocPODetail(dt);
-                    Navigator.push(
-                      context,
-                      SlideRightRoute(
-                        widget: DocPoDetailPage(
-                          Provider.of<PoViewNotifier>(
-                            context,
-                            listen: false,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child:
+                Text("Purchase Order Detail", style: TextStyle(fontSize: 10, color: Colors.grey)),
+          ),
+          ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: dtList.length,
+            separatorBuilder: (ctx, index) {
+              return Divider(height: 1, thickness: 1);
+            },
+            itemBuilder: (ctx, index) {
+              final dt = dtList[index];
+              final grnDt = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
+              return InkWell(
+                splashColor: Theme.of(context).accentColor,
+                onTap: dt.balQty <= 0
+                    ? null
+                    : () async {
+                        await Future.delayed(Duration(milliseconds: 100));
+                        Provider.of<PoViewNotifier>(
+                          context,
+                          listen: false,
+                        ).setSelectedDocPODetail(dt);
+                        Navigator.push(
+                          context,
+                          SlideRightRoute(
+                            widget: DocPoDetailPage(
+                              Provider.of<PoViewNotifier>(
+                                context,
+                                listen: false,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                child: Container(
+                  color:
+                      dt.balQty <= 0 ? Colors.transparent : Colors.lightGreen[50].withOpacity(0.8),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: new BoxDecoration(
+                            color: Theme.of(context).accentColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              (index + 1).toString(),
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
                       ),
-                    );
-                  },
-            child: Container(
-              color: dt.balQty <= 0 ? Colors.transparent : Colors.lightGreen[50].withOpacity(0.8),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      decoration: new BoxDecoration(
-                        color: Theme.of(context).accentColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          (index + 1).toString(),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Row(
+                      Expanded(
+                        child: Column(
                           children: [
-                            Expanded(
-                              child: Column(
-                                children: <Widget>[
-                                  Text(dt.skuName, style: TextStyle(fontWeight: FontWeight.w700)),
-                                  Text(dt.skuCode,
-                                      style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
-                                  Text(dt.uomDesc,
-                                      style: TextStyle(color: Colors.grey[600], fontSize: 12))
-                                ],
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                              ),
-                            ),
-                            Expanded(
-                              child: grnDt == null
-                                  ? Container()
-                                  : Column(
-                                      children: [
-                                        Row(
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text(dt.skuName ?? '',
+                                          style: TextStyle(fontWeight: FontWeight.w700)),
+                                      Text(dt.skuCode ?? '',
+                                          style:
+                                              TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+                                      Text(dt.uomDesc ?? '',
+                                          style: TextStyle(color: Colors.grey[600], fontSize: 12))
+                                    ],
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: grnDt == null
+                                      ? Container()
+                                      : Column(
                                           children: [
-                                            Expanded(
-                                              child: Text(
-                                                grnDt.qty.toString() + ' ' + (dt.uomCode ?? ''),
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.green[800],
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    grnDt.qty.toString() + ' ' + (dt.uomCode ?? ''),
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Colors.green[800],
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                Expanded(
+                                                  child: Text(
+                                                    grnDt.weight.toString() + ' Kg',
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Colors.green[800],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            Expanded(
-                                              child: Text(
-                                                grnDt.weight.toString() + ' Kg',
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.green[800],
+                                            Row(
+                                              children: [
+                                                Expanded(child: Container()),
+                                                Expanded(
+                                                  child: Text(
+                                                    grnDt.expiredDate,
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Colors.green[800],
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                              ],
                                             ),
                                           ],
                                         ),
-                                        Row(
-                                          children: [
-                                            Expanded(child: Container()),
-                                            Expanded(
-                                              child: Text(
-                                                grnDt.expiredDate,
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.green[800],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
-        },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class NewGrnDetail extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final dtList = Provider.of<PoViewNotifier>(context)
+        .grnDetailList
+        .where((d) => d.docDetailId == null)
+        .toList();
+
+    if (dtList.length == 0){
+      return Container();
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text("New Item", style: TextStyle(fontSize: 10, color: Colors.grey)),
+          ),
+          ListView.separated(
+            itemCount: dtList.length,
+            shrinkWrap: true,
+            separatorBuilder: (ctx, index) => Divider(height: 1, thickness: 1),
+            itemBuilder: (ctx, index) {
+
+              final dt = dtList[index];
+
+              return Dismissible(
+                key: PageStorageKey(dt),
+                onDismissed: (direction) {
+                  Provider.of<PoViewNotifier>(context, listen: false).removeGrnDetail(dt);
+                },
+                background: Container(
+                  color: Colors.red,
+                  child: Icon(
+                    Icons.clear,
+                    color: Colors.white,
+                  ),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: new BoxDecoration(
+                            color: Theme.of(context).accentColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              (index + 1).toString(),
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text(dt.skuName ?? '',
+                                          style: TextStyle(fontWeight: FontWeight.w700)),
+                                      Text(dt.skuCode ?? '',
+                                          style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+                                      Text(dt.uomDesc ?? '',
+                                          style: TextStyle(color: Colors.grey[600], fontSize: 12))
+                                    ],
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              dt.qty.toString() + ' ' + (dt.uomCode ?? ''),
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.green[800],
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              dt.weight.toString() + ' Kg',
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.green[800],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(child: Container()),
+                                          Expanded(
+                                            child: Text(
+                                              dt.expiredDate,
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.green[800],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          Center(
+            child: Text("Swipe left or right to delete", style: TextStyle(fontSize: 10, color: Colors.grey)),
+          ),
+        ],
       ),
     );
   }
@@ -478,7 +638,8 @@ class ActionButton extends StatelessWidget {
             child: RaisedButton(
               child: Text("CREATE GRN"),
               onPressed: () async {
-                final check = await Provider.of<PoViewNotifier>(context, listen: false).preSaveGrn();
+                final check =
+                    await Provider.of<PoViewNotifier>(context, listen: false).preSaveGrn();
                 if (check) {
                   showDialog(
                       context: context,

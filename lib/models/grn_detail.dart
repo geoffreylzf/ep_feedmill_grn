@@ -4,7 +4,7 @@ part 'grn_detail.g.dart';
 
 @JsonSerializable()
 class GrnDetail {
-  @JsonKey(name: 'doc_detail_id')
+  @JsonKey(name: 'doc_detail_id', includeIfNull: true)
   int docDetailId;
   @JsonKey(name: 'item_packing_id')
   int itemPackingId;
@@ -17,6 +17,10 @@ class GrnDetail {
   String skuCode;
   @JsonKey(ignore: true)
   String skuName;
+  @JsonKey(ignore: true)
+  String uomDesc;
+  @JsonKey(ignore: true)
+  String uomCode;
 
   GrnDetail({
     this.docDetailId,
@@ -26,6 +30,8 @@ class GrnDetail {
     this.expiredDate,
     this.skuCode,
     this.skuName,
+    this.uomDesc,
+    this.uomCode,
   });
 
   factory GrnDetail.fromJson(Map<String, dynamic> json) => _$GrnDetailFromJson(json);

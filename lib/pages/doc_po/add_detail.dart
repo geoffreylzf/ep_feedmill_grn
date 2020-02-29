@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/models/item_packing.dart';
 import 'package:ep_grn/notifiers/grn_add_detail_notifier.dart';
 import 'package:ep_grn/notifiers/po_view_notifier.dart';
@@ -59,6 +60,24 @@ class ItemPackingSelection extends StatefulWidget {
 class _ItemPackingSelectionState extends State<ItemPackingSelection> {
   final tecFilter = TextEditingController();
   Timer _debounce;
+  GrnAddDetailNotifier bloc;
+  String filterText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    tecFilter.addListener(() {
+      if (_debounce?.isActive ?? false) _debounce.cancel();
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+        if (filterText != tecFilter.text) {
+          filterText = tecFilter.text;
+          if (bloc != null) {
+            bloc.fetchItemPackingList(filter: filterText);
+          }
+        }
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -72,14 +91,7 @@ class _ItemPackingSelectionState extends State<ItemPackingSelection> {
     final itemPackingList = Provider.of<GrnAddDetailNotifier>(context).itemPackingList;
     final itemPackingCount = Provider.of<GrnAddDetailNotifier>(context).itemPackingCount;
     final selectedItemPacking = Provider.of<GrnAddDetailNotifier>(context).selectedItemPacking;
-    final bloc = Provider.of<GrnAddDetailNotifier>(context, listen: false);
-
-    tecFilter.addListener(() {
-      if (_debounce?.isActive ?? false) _debounce.cancel();
-      _debounce = Timer(const Duration(milliseconds: 500), () {
-        bloc.fetchItemPackingList(filter: tecFilter.text);
-      });
-    });
+    bloc = Provider.of<GrnAddDetailNotifier>(context, listen: false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -236,7 +248,6 @@ class _DetailFormState extends State<DetailForm> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Received Qty",
-                contentPadding: EdgeInsets.all(16),
               ),
               validator: (value) {
                 if (value.isEmpty) {
@@ -248,14 +259,13 @@ class _DetailFormState extends State<DetailForm> {
                 return null;
               },
             ),
-            Container(height: 8),
+            Container(height: 12),
             TextFormField(
               controller: tecWeight,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Received Weight",
-                contentPadding: EdgeInsets.all(16),
               ),
               validator: (value) {
                 if (value.isEmpty) {
@@ -267,7 +277,7 @@ class _DetailFormState extends State<DetailForm> {
                 return null;
               },
             ),
-            Container(height: 8),
+            Container(height: 12),
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () async {
@@ -288,7 +298,9 @@ class _DetailFormState extends State<DetailForm> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Expired Date",
-                  contentPadding: EdgeInsets.all(16),
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).errorColor,
+                  ),
                 ),
                 validator: (value) {
                   if (value.isEmpty) {
@@ -297,7 +309,37 @@ class _DetailFormState extends State<DetailForm> {
                   return null;
                 },
               ),
-            )
+            ),
+            Container(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: RaisedButton.icon(
+                icon: Icon(Icons.save),
+                label: Text("SAVE"),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    if (selectedItemPacking == null) {
+                      Provider.of<GrnAddDetailNotifier>(context, listen: false)
+                          .showError("Please select item");
+                      return;
+                    }
+
+                    final grnDetail = GrnDetail(
+                      itemPackingId: selectedItemPacking.id,
+                      qty: double.tryParse(tecQty.text),
+                      weight: double.tryParse(tecWeight.text),
+                      expiredDate: tecExpiredDate.text,
+                      skuCode: selectedItemPacking.skuCode,
+                      skuName: selectedItemPacking.skuName,
+                      uomCode: selectedItemPacking.uomCode,
+                      uomDesc: selectedItemPacking.uomDesc,
+                    );
+                    Provider.of<PoViewNotifier>(context, listen: false).addGrnDetail(grnDetail);
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),

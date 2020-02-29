@@ -11,6 +11,8 @@ class ItemPacking {
   String skuName;
   @JsonKey(name: 'uom_desc')
   String uomDesc;
+  @JsonKey(name: 'uom_code')
+  String uomCode;
   double factor;
 
   ItemPacking({
@@ -18,6 +20,7 @@ class ItemPacking {
     this.skuCode,
     this.skuName,
     this.uomDesc,
+    this.uomCode,
     this.factor,
   });
 
