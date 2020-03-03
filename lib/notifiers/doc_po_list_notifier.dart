@@ -4,7 +4,7 @@ import 'package:ep_grn/utils/error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
-class POListNotifier with ChangeNotifier {
+class DocPoListNotifier with ChangeNotifier {
   bool _isLoading = false;
   List<DocPo> _docPOList = [];
 
@@ -22,7 +22,7 @@ class POListNotifier with ChangeNotifier {
     super.dispose();
   }
 
-  POListNotifier() {
+  DocPoListNotifier() {
     fetchPoList();
   }
 
@@ -32,7 +32,7 @@ class POListNotifier with ChangeNotifier {
       notifyListeners();
       final response = await Api().dio.get('', queryParameters: {
         'r': 'apiMobileFmGrn/getdata',
-        'type': 'po',
+        'type': 'po_list',
       });
       final data = Map<String, dynamic>.from(response.data);
       final poList = List<DocPo>.from(data['list'].map((r) => DocPo.fromJson(r)));

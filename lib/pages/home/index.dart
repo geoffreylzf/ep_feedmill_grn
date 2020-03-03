@@ -1,5 +1,5 @@
 import 'package:ep_grn/animation/route_slide_right.dart';
-import 'package:ep_grn/notifiers/po_list_notifier.dart';
+import 'package:ep_grn/notifiers/doc_po_list_notifier.dart';
 import 'package:ep_grn/pages/doc_po/index.dart';
 import 'package:ep_grn/res/nav.dart';
 import 'package:ep_grn/utils/table.dart';
@@ -66,22 +66,22 @@ class _POListRefresherState extends State<POListRefresher> {
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () async {
-        await Provider.of<POListNotifier>(context, listen: false).fetchPoList();
+        await Provider.of<DocPoListNotifier>(context, listen: false).fetchPoList();
       },
-      child: POList(),
+      child: DocPoList(),
     );
   }
 }
 
-class POList extends StatefulWidget {
+class DocPoList extends StatefulWidget {
   @override
-  _POListState createState() => _POListState();
+  _DocPoListState createState() => _DocPoListState();
 }
 
-class _POListState extends State<POList> {
+class _DocPoListState extends State<DocPoList> {
   @override
   Widget build(BuildContext context) {
-    final docPOList = Provider.of<POListNotifier>(context).docPOList;
+    final docPOList = Provider.of<DocPoListNotifier>(context).docPOList;
 
     return ListView.builder(
       itemCount: docPOList.length,
@@ -107,7 +107,7 @@ class _POListState extends State<POList> {
                               children: [
                                 Text(
                                   po.docNo,
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                                 ),
                                 Row(
                                   children: [
@@ -143,7 +143,7 @@ class _POListState extends State<POList> {
                               children: [
                                 Text(
                                   po.supplierName,
-                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
@@ -193,7 +193,7 @@ class _POListState extends State<POList> {
                 child: new Material(
                   color: Colors.transparent,
                   child: new InkWell(
-                    onTap: Provider.of<POListNotifier>(context).isLoading
+                    onTap: Provider.of<DocPoListNotifier>(context).isLoading
                         ? null
                         : () async {
                             await Future.delayed(Duration(milliseconds: 100));
@@ -216,7 +216,7 @@ class _POListState extends State<POList> {
 class _ErrorMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Provider.of<POListNotifier>(context, listen: false).errMsgStream.listen((errMsg) {
+    Provider.of<DocPoListNotifier>(context, listen: false).errMsgStream.listen((errMsg) {
       if (errMsg != null) {
         showDialog(
           context: context,

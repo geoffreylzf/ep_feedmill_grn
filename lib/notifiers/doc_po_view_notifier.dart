@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ep_grn/models/doc_grn.dart';
 import 'package:ep_grn/models/doc_po.dart';
 import 'package:ep_grn/models/doc_po_detail.dart';
 import 'package:ep_grn/models/grn.dart';
@@ -7,11 +8,12 @@ import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/models/store.dart';
 import 'package:ep_grn/modules/api.dart';
 import 'package:ep_grn/utils/error.dart';
+import 'package:ep_grn/utils/print.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rxdart/rxdart.dart';
 
-class PoViewNotifier with ChangeNotifier {
+class DocPoViewNotifier with ChangeNotifier {
   final DocPo docPO;
   final _errMsgSubject = BehaviorSubject<String>.seeded(null);
 
@@ -21,6 +23,7 @@ class PoViewNotifier with ChangeNotifier {
   List<Store> _storeList = [];
   Store _selectedStore;
   List<GrnDetail> _grnDetailList = [];
+  int _docGrnId;
 
   String refNo = '', remark = '';
   int containerTtl, sampleBagTtl;
@@ -45,19 +48,23 @@ class PoViewNotifier with ChangeNotifier {
     super.dispose();
   }
 
-  PoViewNotifier({@required this.docPO}) {
+  DocPoViewNotifier({@required this.docPO}) {
     _init();
   }
 
   _init() async {
     try {
-      final resPODetailList = await Api().dio.get('',
-          queryParameters: {'r': 'apiMobileFmGrn/getdata', 'type': 'po_detail', 'id': docPO.id});
+      final resPODetailList = await Api().dio.get('', queryParameters: {
+        'r': 'apiMobileFmGrn/getdata',
+        'type': 'po_detail_list',
+        'id': docPO.id
+      });
       final rpdl = Map<String, dynamic>.from(resPODetailList.data);
       _docPODetailList = List<DocPoDetail>.from(rpdl['list'].map((r) => DocPoDetail.fromJson(r)));
 
-      final resStoreList =
-          await Api().dio.get('', queryParameters: {'r': 'apiMobileFmGrn/lookup', 'type': 'store'});
+      final resStoreList = await Api()
+          .dio
+          .get('', queryParameters: {'r': 'apiMobileFmGrn/lookup', 'type': 'store_list'});
       final rsl = Map<String, dynamic>.from(resStoreList.data);
       _storeList = List<Store>.from(rsl['list'].map((r) => Store.fromJson(r)));
 
@@ -165,7 +172,13 @@ class PoViewNotifier with ChangeNotifier {
     try {
       final grnJson = {'grn': grn.toJson()};
       print(json.encode(grnJson));
-      await Api().dio.post('', queryParameters: {'r': 'apiMobileFmGrn/saveGrn'}, data: grnJson);
+      final res = await Api().dio.post(
+            '',
+            queryParameters: {'r': 'apiMobileFmGrn/saveGrn'},
+            data: grnJson,
+          );
+      final data = Map<String, dynamic>.from(res.data);
+      _docGrnId = data['doc_grn_id'];
       Fluttertoast.showToast(msg: "GRN saved");
       return true;
     } catch (e) {
@@ -176,5 +189,19 @@ class PoViewNotifier with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<String> printGrn() async {
+    _isLoading = true;
+    notifyListeners();
+    final response = await Api().dio.get('', queryParameters: {
+      'r': 'apiMobileFmGrn/lookup',
+      'type': 'grn',
+      'id': _docGrnId,
+    });
+    String s = PrintUtil().generateGrnReceipt(DocGrn.fromJson(response.data));
+    _isLoading = false;
+    notifyListeners();
+    return s;
   }
 }

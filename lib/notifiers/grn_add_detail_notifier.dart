@@ -38,7 +38,7 @@ class GrnAddDetailNotifier with ChangeNotifier {
       notifyListeners();
       final response = await Api().dio.get('', queryParameters: {
         'r': 'apiMobileFmGrn/lookup',
-        'type': 'item_packing',
+        'type': 'item_packing_list',
         'filter': filter,
       });
       final data = Map<String, dynamic>.from(response.data);

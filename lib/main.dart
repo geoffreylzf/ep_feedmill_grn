@@ -1,4 +1,4 @@
-import 'package:ep_grn/notifiers/po_list_notifier.dart';
+import 'package:ep_grn/notifiers/doc_po_list_notifier.dart';
 import 'package:ep_grn/notifiers/user_repository_notifier.dart';
 import 'package:ep_grn/pages/home/index.dart';
 import 'package:ep_grn/pages/login.dart';
@@ -13,7 +13,7 @@ void main() => runApp(
             create: (_) => UserRepositoryNotifier(),
           ),
           ChangeNotifierProvider(
-            create: (_) => POListNotifier(),
+            create: (_) => DocPoListNotifier(),
           ),
         ],
         child: MyApp(),

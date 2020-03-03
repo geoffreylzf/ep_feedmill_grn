@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/models/item_packing.dart';
 import 'package:ep_grn/notifiers/grn_add_detail_notifier.dart';
-import 'package:ep_grn/notifiers/po_view_notifier.dart';
+import 'package:ep_grn/notifiers/doc_po_view_notifier.dart';
 import 'package:ep_grn/widgets/simple_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class DocPoAddDetailPage extends StatefulWidget {
-  final PoViewNotifier poViewNotifier;
+  final DocPoViewNotifier poViewNotifier;
 
   const DocPoAddDetailPage(this.poViewNotifier);
 
@@ -204,7 +204,8 @@ class _DetailFormState extends State<DetailForm> {
 
   final tecQty = TextEditingController();
   final tecWeight = TextEditingController();
-  final tecExpiredDate = TextEditingController();
+  final tecManufactureDate = TextEditingController();
+  final tecExpireDate = TextEditingController();
 
   ItemPacking selectedItemPacking;
 
@@ -227,7 +228,8 @@ class _DetailFormState extends State<DetailForm> {
   void dispose() {
     tecQty.dispose();
     tecWeight.dispose();
-    tecExpiredDate.dispose();
+    tecManufactureDate.dispose();
+    tecExpireDate.dispose();
     super.dispose();
   }
 
@@ -277,6 +279,38 @@ class _DetailFormState extends State<DetailForm> {
                 return null;
               },
             ),
+            Container(height: 12),GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () async {
+                final selectedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now().add(Duration(days: -365)),
+                  lastDate: DateTime.now().add(Duration(days: 365)),
+                );
+
+                if (selectedDate != null) {
+                  tecManufactureDate.text = dateFormat.format(selectedDate);
+                }
+              },
+              child: TextFormField(
+                controller: tecManufactureDate,
+                enabled: false,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Manufacture Date",
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).errorColor,
+                  ),
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Cannot blank";
+                  }
+                  return null;
+                },
+              ),
+            ),
             Container(height: 12),
             GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -289,15 +323,15 @@ class _DetailFormState extends State<DetailForm> {
                 );
 
                 if (selectedDate != null) {
-                  tecExpiredDate.text = dateFormat.format(selectedDate);
+                  tecExpireDate.text = dateFormat.format(selectedDate);
                 }
               },
               child: TextFormField(
-                controller: tecExpiredDate,
+                controller: tecExpireDate,
                 enabled: false,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: "Expired Date",
+                  labelText: "Expire Date",
                   errorStyle: TextStyle(
                     color: Theme.of(context).errorColor,
                   ),
@@ -328,13 +362,14 @@ class _DetailFormState extends State<DetailForm> {
                       itemPackingId: selectedItemPacking.id,
                       qty: double.tryParse(tecQty.text),
                       weight: double.tryParse(tecWeight.text),
-                      expiredDate: tecExpiredDate.text,
+                      manufactureDate: tecManufactureDate.text,
+                      expireDate: tecExpireDate.text,
                       skuCode: selectedItemPacking.skuCode,
                       skuName: selectedItemPacking.skuName,
                       uomCode: selectedItemPacking.uomCode,
                       uomDesc: selectedItemPacking.uomDesc,
                     );
-                    Provider.of<PoViewNotifier>(context, listen: false).addGrnDetail(grnDetail);
+                    Provider.of<DocPoViewNotifier>(context, listen: false).addGrnDetail(grnDetail);
                     Navigator.of(context).pop();
                   }
                 },

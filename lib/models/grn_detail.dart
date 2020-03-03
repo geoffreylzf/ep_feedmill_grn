@@ -10,8 +10,10 @@ class GrnDetail {
   int itemPackingId;
   double qty;
   double weight;
-  @JsonKey(name: 'expired_date')
-  String expiredDate;
+  @JsonKey(name: 'manufacture_date')
+  String manufactureDate;
+  @JsonKey(name: 'expire_date')
+  String expireDate;
 
   @JsonKey(ignore: true)
   String skuCode;
@@ -27,7 +29,8 @@ class GrnDetail {
     this.itemPackingId,
     this.qty,
     this.weight,
-    this.expiredDate,
+    this.manufactureDate,
+    this.expireDate,
     this.skuCode,
     this.skuName,
     this.uomDesc,

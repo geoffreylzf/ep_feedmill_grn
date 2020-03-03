@@ -1,8 +1,9 @@
 import 'package:ep_grn/animation/route_slide_right.dart';
 import 'package:ep_grn/models/doc_po.dart';
-import 'package:ep_grn/notifiers/po_list_notifier.dart';
-import 'package:ep_grn/notifiers/po_view_notifier.dart';
+import 'package:ep_grn/notifiers/doc_po_list_notifier.dart';
+import 'package:ep_grn/notifiers/doc_po_view_notifier.dart';
 import 'package:ep_grn/pages/doc_po/add_detail.dart';
+import 'package:ep_grn/pages/print/index.dart';
 import 'package:ep_grn/utils/table.dart';
 import 'package:ep_grn/widgets/simple_alert_dialog.dart';
 import 'package:ep_grn/widgets/simple_loading_dialog.dart';
@@ -27,7 +28,7 @@ class _DocPOIndexPageState extends State<DocPOIndexPage> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => PoViewNotifier(docPO: widget.docPO),
+          create: (_) => DocPoViewNotifier(docPO: widget.docPO),
         ),
       ],
       child: Scaffold(
@@ -51,7 +52,7 @@ class _DocPOIndexPageState extends State<DocPOIndexPage> {
                 Container(height: 8, color: Colors.grey[200]),
               ],
             ),
-            Consumer<PoViewNotifier>(
+            Consumer<DocPoViewNotifier>(
               builder: (ctx, povn, _) {
                 return SimpleLoadingDialog(povn.isLoading);
               },
@@ -67,7 +68,7 @@ class _DocPOIndexPageState extends State<DocPOIndexPage> {
 class POHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final po = Provider.of<PoViewNotifier>(context).docPO;
+    final po = Provider.of<DocPoViewNotifier>(context).docPO;
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16),
@@ -83,7 +84,7 @@ class POHeader extends StatelessWidget {
                   children: [
                     Text(
                       po.docNo,
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                     ),
                     Row(
                       children: [
@@ -119,7 +120,7 @@ class POHeader extends StatelessWidget {
                   children: [
                     Text(
                       po.supplierName,
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 4.0),
@@ -190,21 +191,21 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
   @override
   Widget build(BuildContext context) {
     tecRefNo.addListener(() {
-      Provider.of<PoViewNotifier>(context, listen: false).refNo = tecRefNo.text;
+      Provider.of<DocPoViewNotifier>(context, listen: false).refNo = tecRefNo.text;
     });
 
     tecContainerTtl.addListener(() {
-      Provider.of<PoViewNotifier>(context, listen: false).containerTtl =
+      Provider.of<DocPoViewNotifier>(context, listen: false).containerTtl =
           int.tryParse(tecContainerTtl.text);
     });
 
     tecSampleBagTtl.addListener(() {
-      Provider.of<PoViewNotifier>(context, listen: false).sampleBagTtl =
+      Provider.of<DocPoViewNotifier>(context, listen: false).sampleBagTtl =
           int.tryParse(tecSampleBagTtl.text);
     });
 
     tecRemark.addListener(() {
-      Provider.of<PoViewNotifier>(context, listen: false).remark = tecRemark.text;
+      Provider.of<DocPoViewNotifier>(context, listen: false).remark = tecRemark.text;
     });
 
     return Container(
@@ -237,11 +238,11 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
                   hint: Text("Store"),
                   isExpanded: true,
                   elevation: 16,
-                  value: Provider.of<PoViewNotifier>(context).selectedStore,
+                  value: Provider.of<DocPoViewNotifier>(context).selectedStore,
                   onChanged: (v) {
-                    Provider.of<PoViewNotifier>(context, listen: false).setSelectedStore(v);
+                    Provider.of<DocPoViewNotifier>(context, listen: false).setSelectedStore(v);
                   },
-                  items: Provider.of<PoViewNotifier>(context).storeList.map(
+                  items: Provider.of<DocPoViewNotifier>(context).storeList.map(
                     (store) {
                       return DropdownMenuItem(
                         value: store,
@@ -271,7 +272,7 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Container Total',
+                    labelText: 'Total Container',
                     contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   ),
                 ),
@@ -284,7 +285,7 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Sample Bag Total',
+                    labelText: 'Total Sample Bag',
                     contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   ),
                 ),
@@ -311,7 +312,7 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
 class PODetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dtList = Provider.of<PoViewNotifier>(context).docPODetailList;
+    final dtList = Provider.of<DocPoViewNotifier>(context).docPODetailList;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -332,14 +333,14 @@ class PODetail extends StatelessWidget {
             },
             itemBuilder: (ctx, index) {
               final dt = dtList[index];
-              final grnDt = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
+              final grnDt = Provider.of<DocPoViewNotifier>(context).getGrnDetail(dt);
               return InkWell(
                 splashColor: Theme.of(context).accentColor,
                 onTap: dt.balQty <= 0
                     ? null
                     : () async {
                         await Future.delayed(Duration(milliseconds: 100));
-                        Provider.of<PoViewNotifier>(
+                        Provider.of<DocPoViewNotifier>(
                           context,
                           listen: false,
                         ).setSelectedDocPODetail(dt);
@@ -347,7 +348,7 @@ class PODetail extends StatelessWidget {
                           context,
                           SlideRightRoute(
                             widget: DocPoDetailPage(
-                              Provider.of<PoViewNotifier>(
+                              Provider.of<DocPoViewNotifier>(
                                 context,
                                 listen: false,
                               ),
@@ -428,10 +429,19 @@ class PODetail extends StatelessWidget {
                                             ),
                                             Row(
                                               children: [
-                                                Expanded(child: Container()),
                                                 Expanded(
                                                   child: Text(
-                                                    grnDt.expiredDate,
+                                                    grnDt.manufactureDate,
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Colors.green[800],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: Text(
+                                                    grnDt.expireDate,
                                                     textAlign: TextAlign.right,
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.w700,
@@ -464,12 +474,12 @@ class PODetail extends StatelessWidget {
 class NewGrnDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dtList = Provider.of<PoViewNotifier>(context)
+    final dtList = Provider.of<DocPoViewNotifier>(context)
         .grnDetailList
         .where((d) => d.docDetailId == null)
         .toList();
 
-    if (dtList.length == 0){
+    if (dtList.length == 0) {
       return Container();
     }
 
@@ -487,13 +497,12 @@ class NewGrnDetail extends StatelessWidget {
             shrinkWrap: true,
             separatorBuilder: (ctx, index) => Divider(height: 1, thickness: 1),
             itemBuilder: (ctx, index) {
-
               final dt = dtList[index];
 
               return Dismissible(
                 key: PageStorageKey(dt),
                 onDismissed: (direction) {
-                  Provider.of<PoViewNotifier>(context, listen: false).removeGrnDetail(dt);
+                  Provider.of<DocPoViewNotifier>(context, listen: false).removeGrnDetail(dt);
                 },
                 background: Container(
                   color: Colors.red,
@@ -534,7 +543,8 @@ class NewGrnDetail extends StatelessWidget {
                                       Text(dt.skuName ?? '',
                                           style: TextStyle(fontWeight: FontWeight.w700)),
                                       Text(dt.skuCode ?? '',
-                                          style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+                                          style:
+                                              TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
                                       Text(dt.uomDesc ?? '',
                                           style: TextStyle(color: Colors.grey[600], fontSize: 12))
                                     ],
@@ -570,10 +580,19 @@ class NewGrnDetail extends StatelessWidget {
                                       ),
                                       Row(
                                         children: [
-                                          Expanded(child: Container()),
                                           Expanded(
                                             child: Text(
-                                              dt.expiredDate,
+                                              dt.manufactureDate,
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.green[800],
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              dt.expireDate,
                                               textAlign: TextAlign.right,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w700,
@@ -598,7 +617,8 @@ class NewGrnDetail extends StatelessWidget {
             },
           ),
           Center(
-            child: Text("Swipe left or right to delete", style: TextStyle(fontSize: 10, color: Colors.grey)),
+            child: Text("Swipe left or right to delete",
+                style: TextStyle(fontSize: 10, color: Colors.grey)),
           ),
         ],
       ),
@@ -623,7 +643,7 @@ class ActionButton extends StatelessWidget {
                   context,
                   SlideRightRoute(
                     widget: DocPoAddDetailPage(
-                      Provider.of<PoViewNotifier>(
+                      Provider.of<DocPoViewNotifier>(
                         context,
                         listen: false,
                       ),
@@ -639,7 +659,7 @@ class ActionButton extends StatelessWidget {
               child: Text("CREATE GRN"),
               onPressed: () async {
                 final check =
-                    await Provider.of<PoViewNotifier>(context, listen: false).preSaveGrn();
+                    await Provider.of<DocPoViewNotifier>(context, listen: false).preSaveGrn();
                 if (check) {
                   showDialog(
                       context: context,
@@ -656,12 +676,21 @@ class ActionButton extends StatelessWidget {
                               onPressed: () async {
                                 Navigator.of(ctx).pop(true);
                                 final success =
-                                    await Provider.of<PoViewNotifier>(context, listen: false)
+                                    await Provider.of<DocPoViewNotifier>(context, listen: false)
                                         .saveGrn();
 
                                 if (success) {
-                                  Provider.of<POListNotifier>(context, listen: false).fetchPoList();
-                                  Navigator.of(context).pop();
+                                  Provider.of<DocPoListNotifier>(context, listen: false)
+                                      .fetchPoList();
+
+                                  final s =
+                                      await Provider.of<DocPoViewNotifier>(context, listen: false)
+                                          .printGrn();
+
+                                  Navigator.pushReplacement(
+                                    context,
+                                    SlideRightRoute(widget: PrintIndexPage(s)),
+                                  );
                                 }
                               },
                               child: Text('EXIT'),
@@ -682,7 +711,7 @@ class ActionButton extends StatelessWidget {
 class _ErrorMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Provider.of<PoViewNotifier>(context, listen: false).errMsgStream.listen((errMsg) {
+    Provider.of<DocPoViewNotifier>(context, listen: false).errMsgStream.listen((errMsg) {
       if (errMsg != null) {
         showDialog(
           context: context,

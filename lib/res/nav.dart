@@ -1,6 +1,6 @@
 import 'package:ep_grn/animation/route_slide_right.dart';
 import 'package:ep_grn/notifiers/user_repository_notifier.dart';
-import 'package:ep_grn/pages/print/index.dart';
+import 'package:ep_grn/pages/doc_grn/index.dart';
 import 'package:ep_grn/widgets/simple_confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,11 +46,11 @@ class NavDrawerStart extends StatelessWidget {
           ListTile(
             dense: true,
             leading: Icon(Icons.history),
-            title: Text('History'),
+            title: Text('Good Receive Note'),
             onTap: () async {
               Navigator.push(
                 context,
-                SlideRightRoute(widget: PrintIndexPage("asasasasas")),
+                SlideRightRoute(widget: DocGrnIndexPage()),
               );
             },
           ),

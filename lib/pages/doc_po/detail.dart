@@ -1,13 +1,13 @@
 import 'package:ep_grn/models/doc_po_detail.dart';
 import 'package:ep_grn/models/grn_detail.dart';
-import 'package:ep_grn/notifiers/po_view_notifier.dart';
+import 'package:ep_grn/notifiers/doc_po_view_notifier.dart';
 import 'package:ep_grn/utils/table.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class DocPoDetailPage extends StatefulWidget {
-  final PoViewNotifier poViewNotifier;
+  final DocPoViewNotifier poViewNotifier;
 
   const DocPoDetailPage(this.poViewNotifier);
 
@@ -33,7 +33,7 @@ class _DocPoDetailPageState extends State<DocPoDetailPage> {
 class DetailInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dt = Provider.of<PoViewNotifier>(context).selectedDocPODetail;
+    final dt = Provider.of<DocPoViewNotifier>(context).selectedDocPODetail;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -57,12 +57,12 @@ class DetailInfo extends StatelessWidget {
                 TableHeaderCell('Weight (Kg)'),
               ]),
               TableRow(children: [
-                TableDetailCell("PO"),
+                TableDetailCell("Ordered"),
                 TableDetailCell(dt.qty.toString(), textAlign: TextAlign.right),
                 TableDetailCell(dt.weight.toString(), textAlign: TextAlign.right),
               ]),
               TableRow(children: [
-                TableDetailCell("GRN"),
+                TableDetailCell("Received"),
                 TableDetailCell(dt.grnQty.toString(), textAlign: TextAlign.right),
                 TableDetailCell(dt.grnWeight.toString(), textAlign: TextAlign.right),
               ]),
@@ -93,7 +93,8 @@ class _DetailEntryState extends State<DetailEntry> {
 
   final tecQty = TextEditingController();
   final tecWeight = TextEditingController();
-  final tecExpiredDate = TextEditingController();
+  final tecManufactureDate = TextEditingController();
+  final tecExpireDate = TextEditingController();
 
   DocPoDetail dt;
 
@@ -114,20 +115,22 @@ class _DetailEntryState extends State<DetailEntry> {
   void dispose() {
     tecQty.dispose();
     tecWeight.dispose();
-    tecExpiredDate.dispose();
+    tecManufactureDate.dispose();
+    tecExpireDate.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    dt = Provider.of<PoViewNotifier>(context).selectedDocPODetail;
+    dt = Provider.of<DocPoViewNotifier>(context).selectedDocPODetail;
 
-    final grnDt = Provider.of<PoViewNotifier>(context).getGrnDetail(dt);
+    final grnDt = Provider.of<DocPoViewNotifier>(context).getGrnDetail(dt);
 
     if (grnDt != null) {
       tecQty.text = grnDt.qty.toString();
       tecWeight.text = grnDt.weight.toString();
-      tecExpiredDate.text = grnDt.expiredDate.toString();
+      tecManufactureDate.text = grnDt.manufactureDate.toString();
+      tecExpireDate.text = grnDt.expireDate.toString();
     }
 
     return Padding(
@@ -186,7 +189,39 @@ class _DetailEntryState extends State<DetailEntry> {
             Row(
               children: [
                 Expanded(
-                  child: Container(),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () async {
+                      final selectedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now().add(Duration(days: -3650)),
+                        lastDate: DateTime.now().add(Duration(days: 3650)),
+                      );
+
+                      if (selectedDate != null) {
+                        tecManufactureDate.text = dateFormat.format(selectedDate);
+                      }
+                    },
+                    child: TextFormField(
+                      controller: tecManufactureDate,
+                      enabled: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Manufacture Date",
+                        contentPadding: EdgeInsets.all(16),
+                        errorStyle: TextStyle(
+                          color: Theme.of(context).errorColor, // or any other color
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Cannot blank";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
                 ),
                 Container(width: 8),
                 Expanded(
@@ -196,20 +231,20 @@ class _DetailEntryState extends State<DetailEntry> {
                       final selectedDate = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
-                        firstDate: DateTime.now().add(Duration(days: -365)),
-                        lastDate: DateTime.now().add(Duration(days: 365)),
+                        firstDate: DateTime.now().add(Duration(days: -3650)),
+                        lastDate: DateTime.now().add(Duration(days: 3650)),
                       );
 
                       if (selectedDate != null) {
-                        tecExpiredDate.text = dateFormat.format(selectedDate);
+                        tecExpireDate.text = dateFormat.format(selectedDate);
                       }
                     },
                     child: TextFormField(
-                      controller: tecExpiredDate,
+                      controller: tecExpireDate,
                       enabled: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: "Expired Date",
+                        labelText: "Expire Date",
                         contentPadding: EdgeInsets.all(16),
                         errorStyle: TextStyle(
                           color: Theme.of(context).errorColor, // or any other color
@@ -235,7 +270,8 @@ class _DetailEntryState extends State<DetailEntry> {
                     label: Text("DELETE"),
                     onPressed: () {
                       if (grnDt != null) {
-                        Provider.of<PoViewNotifier>(context, listen: false).removeGrnDetail(grnDt);
+                        Provider.of<DocPoViewNotifier>(context, listen: false)
+                            .removeGrnDetail(grnDt);
                       }
                       Navigator.of(context).pop();
                     },
@@ -253,14 +289,16 @@ class _DetailEntryState extends State<DetailEntry> {
                           itemPackingId: dt.itemPackingId,
                           qty: double.tryParse(tecQty.text),
                           weight: double.tryParse(tecWeight.text),
-                          expiredDate: tecExpiredDate.text,
+                          manufactureDate: tecManufactureDate.text,
+                          expireDate: tecExpireDate.text,
                           skuCode: dt.skuCode,
                           skuName: dt.skuName,
                           uomCode: dt.uomCode,
                           uomDesc: dt.uomDesc,
                         );
 
-                        Provider.of<PoViewNotifier>(context, listen: false).addGrnDetail(grnDetail);
+                        Provider.of<DocPoViewNotifier>(context, listen: false)
+                            .addGrnDetail(grnDetail);
                         Navigator.of(context).pop();
                       }
                     },

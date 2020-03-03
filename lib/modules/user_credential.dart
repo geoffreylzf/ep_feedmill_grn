@@ -10,6 +10,8 @@ class UserCredentialModule {
   String _password;
   SharedPreferences _sp;
 
+  String get username => _username;
+
   static final _instance = UserCredentialModule._internal();
 
   factory UserCredentialModule() => _instance;
