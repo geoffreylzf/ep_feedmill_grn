@@ -16,11 +16,11 @@ class Grn {
   int storeId;
   @JsonKey(name: 'ref_no')
   String refNo;
-  @JsonKey(name: 'container_ttl')
+  @JsonKey(name: 'container_ttl', includeIfNull: true)
   int containerTtl;
-  @JsonKey(name: 'sample_bag_ttl')
+  @JsonKey(name: 'sample_bag_ttl', includeIfNull: true)
   int sampleBagTtl;
-  @JsonKey(name: 'remark')
+  @JsonKey(name: 'remark', includeIfNull: true)
   String remark;
   List<GrnDetail> details;
 

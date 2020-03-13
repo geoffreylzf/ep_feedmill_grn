@@ -123,23 +123,23 @@ class DocPoViewNotifier with ChangeNotifier {
       return false;
     }
 
-    if (containerTtl == 0 || containerTtl == null) {
-      _errMsgSubject.add('Please enter container total');
-      _errMsgSubject.add(null);
-      return false;
-    }
-
-    if (sampleBagTtl == 0 || sampleBagTtl == null) {
-      _errMsgSubject.add('Please enter container total');
-      _errMsgSubject.add(null);
-      return false;
-    }
-
-    if (remark == '' || remark == null) {
-      _errMsgSubject.add('Please enter remark');
-      _errMsgSubject.add(null);
-      return false;
-    }
+//    if (containerTtl == 0 || containerTtl == null) {
+//      _errMsgSubject.add('Please enter container total');
+//      _errMsgSubject.add(null);
+//      return false;
+//    }
+//
+//    if (sampleBagTtl == 0 || sampleBagTtl == null) {
+//      _errMsgSubject.add('Please enter container total');
+//      _errMsgSubject.add(null);
+//      return false;
+//    }
+//
+//    if (remark == '' || remark == null) {
+//      _errMsgSubject.add('Please enter remark');
+//      _errMsgSubject.add(null);
+//      return false;
+//    }
 
     if (_grnDetailList.length == 0) {
       _errMsgSubject.add('Please receive atleast 1 item');
@@ -178,6 +178,7 @@ class DocPoViewNotifier with ChangeNotifier {
             data: grnJson,
           );
       final data = Map<String, dynamic>.from(res.data);
+      print(data['doc_grn_id'].runtimeType.toString());
       _docGrnId = data['doc_grn_id'];
       Fluttertoast.showToast(msg: "GRN saved");
       return true;

@@ -303,12 +303,6 @@ class _DetailFormState extends State<DetailForm> {
                     color: Theme.of(context).errorColor,
                   ),
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return "Cannot blank";
-                  }
-                  return null;
-                },
               ),
             ),
             Container(height: 12),
@@ -336,12 +330,6 @@ class _DetailFormState extends State<DetailForm> {
                     color: Theme.of(context).errorColor,
                   ),
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return "Cannot blank";
-                  }
-                  return null;
-                },
               ),
             ),
             Container(height: 12),

@@ -214,12 +214,6 @@ class _DetailEntryState extends State<DetailEntry> {
                           color: Theme.of(context).errorColor, // or any other color
                         ),
                       ),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return "Cannot blank";
-                        }
-                        return null;
-                      },
                     ),
                   ),
                 ),
@@ -250,12 +244,6 @@ class _DetailEntryState extends State<DetailEntry> {
                           color: Theme.of(context).errorColor, // or any other color
                         ),
                       ),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return "Cannot blank";
-                        }
-                        return null;
-                      },
                     ),
                   ),
                 ),

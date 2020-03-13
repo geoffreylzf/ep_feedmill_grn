@@ -156,9 +156,9 @@ class POHeader extends StatelessWidget {
                 TableHeaderCell('Weight Bridge Remark'),
               ]),
               TableRow(children: [
-                TableDetailCell(po.truckNo),
-                TableDetailCell(po.weightBridgeNo),
-                TableDetailCell(po.remark),
+                TableDetailCell(po.truckNo ?? ''),
+                TableDetailCell(po.weightBridgeNo ?? ''),
+                TableDetailCell(po.remark ?? ''),
               ]),
             ],
           ),
@@ -399,60 +399,70 @@ class PODetail extends StatelessWidget {
                                   ),
                                 ),
                                 Expanded(
-                                  child: grnDt == null
-                                      ? Container()
-                                      : Column(
-                                          children: [
-                                            Row(
+                                  child: dt.balQty <= 0
+                                      ? Center(
+                                          child: Container(
+                                            color: Colors.red[100],
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text('Fully Received'),
+                                          ),
+                                        )
+                                      : (grnDt == null
+                                          ? Container()
+                                          : Column(
                                               children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    grnDt.qty.toString() + ' ' + (dt.uomCode ?? ''),
-                                                    textAlign: TextAlign.right,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w700,
-                                                      color: Colors.green[800],
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        grnDt.qty.toString() +
+                                                            ' ' +
+                                                            (dt.uomCode ?? ''),
+                                                        textAlign: TextAlign.right,
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w700,
+                                                          color: Colors.green[800],
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        grnDt.weight.toString() + ' Kg',
+                                                        textAlign: TextAlign.right,
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w700,
+                                                          color: Colors.green[800],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                Expanded(
-                                                  child: Text(
-                                                    grnDt.weight.toString() + ' Kg',
-                                                    textAlign: TextAlign.right,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w700,
-                                                      color: Colors.green[800],
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        grnDt.manufactureDate,
+                                                        textAlign: TextAlign.right,
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w700,
+                                                          color: Colors.green[800],
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        grnDt.expireDate,
+                                                        textAlign: TextAlign.right,
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w700,
+                                                          color: Colors.green[800],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    grnDt.manufactureDate,
-                                                    textAlign: TextAlign.right,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w700,
-                                                      color: Colors.green[800],
-                                                    ),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    grnDt.expireDate,
-                                                    textAlign: TextAlign.right,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w700,
-                                                      color: Colors.green[800],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                            )),
                                 ),
                               ],
                             ),
@@ -693,7 +703,7 @@ class ActionButton extends StatelessWidget {
                                   );
                                 }
                               },
-                              child: Text('EXIT'),
+                              child: Text('CREATE'),
                             ),
                           ],
                         );

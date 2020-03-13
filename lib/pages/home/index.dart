@@ -179,9 +179,9 @@ class _DocPoListState extends State<DocPoList> {
                             TableHeaderCell('Weight Bridge Remark'),
                           ]),
                           TableRow(children: [
-                            TableDetailCell(po.truckNo),
-                            TableDetailCell(po.weightBridgeNo),
-                            TableDetailCell(po.remark),
+                            TableDetailCell(po.truckNo ?? ''),
+                            TableDetailCell(po.weightBridgeNo ?? ''),
+                            TableDetailCell(po.remark ?? ''),
                           ]),
                         ],
                       ),

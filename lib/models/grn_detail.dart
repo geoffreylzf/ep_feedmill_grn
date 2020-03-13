@@ -10,9 +10,9 @@ class GrnDetail {
   int itemPackingId;
   double qty;
   double weight;
-  @JsonKey(name: 'manufacture_date')
+  @JsonKey(name: 'manufacture_date', includeIfNull: true)
   String manufactureDate;
-  @JsonKey(name: 'expire_date')
+  @JsonKey(name: 'expire_date', includeIfNull: true)
   String expireDate;
 
   @JsonKey(ignore: true)
