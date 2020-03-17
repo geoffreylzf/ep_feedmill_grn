@@ -16,9 +16,11 @@ class PrintUtil {
     s += _fmtLeftLine(grn.companyRegNo);
     s += _fmtLeftLine();
     s += _fmtLeftLine("Good Receive Note");
-    s += _fmtLeftLine('Doc No   : ' + grn.docNo);
-    s += _fmtLeftLine('Date     : ' + grn.docDate);
-    s += _fmtLeftLine('Supplier : ' + grn.supplierName);
+    s += _fmtLeftLine('Doc No      : ' + grn.docNo);
+    s += _fmtLeftLine('Date        : ' + grn.docDate);
+    s += _fmtLeftLine('Po Doc No   : ' + (grn.poDocNo ?? ''));
+    s += _fmtLeftLine('Supplier    : ' + grn.supplierName);
+    s += _fmtLeftLine('Supp Ref No : ' + grn.supplierRefNo);
     s += _fmtLeftLine();
     s += _fmtLeftLine(_lineSeparator);
     s += _fmtLeftLine("Item                       Qty         Weight");

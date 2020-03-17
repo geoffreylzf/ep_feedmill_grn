@@ -1,3 +1,4 @@
+import 'package:ep_grn/models/grn_container.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'grn_detail.dart';
@@ -16,13 +17,10 @@ class Grn {
   int storeId;
   @JsonKey(name: 'ref_no')
   String refNo;
-  @JsonKey(name: 'container_ttl', includeIfNull: true)
-  int containerTtl;
-  @JsonKey(name: 'sample_bag_ttl', includeIfNull: true)
-  int sampleBagTtl;
   @JsonKey(name: 'remark', includeIfNull: true)
   String remark;
   List<GrnDetail> details;
+  List<GrnContainer> containers;
 
   Grn({
     this.companyId,
@@ -30,10 +28,9 @@ class Grn {
     this.docPoCheckId,
     this.storeId,
     this.refNo,
-    this.containerTtl,
-    this.sampleBagTtl,
     this.remark,
     this.details,
+    this.containers,
   });
 
   factory Grn.fromJson(Map<String, dynamic> json) => _$GrnFromJson(json);

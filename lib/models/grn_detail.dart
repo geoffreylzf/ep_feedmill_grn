@@ -14,6 +14,8 @@ class GrnDetail {
   String manufactureDate;
   @JsonKey(name: 'expire_date', includeIfNull: true)
   String expireDate;
+  @JsonKey(name: 'sample_bag_ttl', includeIfNull: true)
+  int sampleBagTtl;
 
   @JsonKey(ignore: true)
   String skuCode;
@@ -31,6 +33,7 @@ class GrnDetail {
     this.weight,
     this.manufactureDate,
     this.expireDate,
+    this.sampleBagTtl,
     this.skuCode,
     this.skuName,
     this.uomDesc,

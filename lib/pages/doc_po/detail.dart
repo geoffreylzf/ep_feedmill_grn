@@ -95,6 +95,7 @@ class _DetailEntryState extends State<DetailEntry> {
   final tecWeight = TextEditingController();
   final tecManufactureDate = TextEditingController();
   final tecExpireDate = TextEditingController();
+  final tecSampleBagTtl = TextEditingController();
 
   DocPoDetail dt;
 
@@ -103,7 +104,7 @@ class _DetailEntryState extends State<DetailEntry> {
     super.initState();
     tecQty.addListener(() {
       final qty = double.tryParse(tecQty.text);
-      if (qty != null) {
+      if (qty != null && dt != null) {
         tecWeight.text = (qty * dt.factor).toString();
       } else {
         tecWeight.text = "";
@@ -117,6 +118,7 @@ class _DetailEntryState extends State<DetailEntry> {
     tecWeight.dispose();
     tecManufactureDate.dispose();
     tecExpireDate.dispose();
+    tecSampleBagTtl.dispose();
     super.dispose();
   }
 
@@ -249,6 +251,36 @@ class _DetailEntryState extends State<DetailEntry> {
                 ),
               ],
             ),
+            Container(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: tecSampleBagTtl,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Total Sample Qty",
+                      contentPadding: EdgeInsets.all(16),
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Cannot blank";
+                      }
+                      if (int.tryParse(value) == null) {
+                        return "Number only";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Container(width: 8),
+                Expanded(
+                  child: Container(),
+                ),
+              ],
+            ),
             Container(height: 16),
             Row(
               children: [
@@ -279,6 +311,7 @@ class _DetailEntryState extends State<DetailEntry> {
                           weight: double.tryParse(tecWeight.text),
                           manufactureDate: tecManufactureDate.text,
                           expireDate: tecExpireDate.text,
+                          sampleBagTtl: int.tryParse(tecSampleBagTtl.text),
                           skuCode: dt.skuCode,
                           skuName: dt.skuName,
                           uomCode: dt.uomCode,

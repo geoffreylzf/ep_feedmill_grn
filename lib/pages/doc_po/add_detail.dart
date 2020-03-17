@@ -206,6 +206,7 @@ class _DetailFormState extends State<DetailForm> {
   final tecWeight = TextEditingController();
   final tecManufactureDate = TextEditingController();
   final tecExpireDate = TextEditingController();
+  final tecSampleBagTtl = TextEditingController();
 
   ItemPacking selectedItemPacking;
 
@@ -230,6 +231,7 @@ class _DetailFormState extends State<DetailForm> {
     tecWeight.dispose();
     tecManufactureDate.dispose();
     tecExpireDate.dispose();
+    tecSampleBagTtl.dispose();
     super.dispose();
   }
 
@@ -333,6 +335,24 @@ class _DetailFormState extends State<DetailForm> {
               ),
             ),
             Container(height: 12),
+            TextFormField(
+              controller: tecSampleBagTtl,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Total Sample Qty",
+              ),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return "Cannot blank";
+                }
+                if (int.tryParse(value) == null) {
+                  return "Number only";
+                }
+                return null;
+              },
+            ),
+            Container(height: 12),
             SizedBox(
               width: double.infinity,
               child: RaisedButton.icon(
@@ -352,6 +372,7 @@ class _DetailFormState extends State<DetailForm> {
                       weight: double.tryParse(tecWeight.text),
                       manufactureDate: tecManufactureDate.text,
                       expireDate: tecExpireDate.text,
+                      sampleBagTtl: int.tryParse(tecSampleBagTtl.text),
                       skuCode: selectedItemPacking.skuCode,
                       skuName: selectedItemPacking.skuName,
                       uomCode: selectedItemPacking.uomCode,

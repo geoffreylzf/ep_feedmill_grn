@@ -2,35 +2,39 @@ import 'dart:convert';
 
 import 'package:ep_grn/models/doc_grn.dart';
 import 'package:ep_grn/models/doc_po.dart';
+import 'package:ep_grn/models/doc_po_container.dart';
 import 'package:ep_grn/models/doc_po_detail.dart';
 import 'package:ep_grn/models/grn.dart';
+import 'package:ep_grn/models/grn_container.dart';
 import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/models/store.dart';
 import 'package:ep_grn/modules/api.dart';
 import 'package:ep_grn/utils/error.dart';
+import 'package:ep_grn/utils/mixin.dart';
 import 'package:ep_grn/utils/print.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:rxdart/rxdart.dart';
 
 class DocPoViewNotifier with ChangeNotifier {
   final DocPo docPO;
-  final _errMsgSubject = BehaviorSubject<String>.seeded(null);
 
   bool _isLoading = true;
-  List<DocPoDetail> _docPODetailList = [];
+  List<DocPoDetail> _docPoDetailList = [];
+  List<DocPoContainer> _docPoContainerList = [];
   DocPoDetail _selectedDocPODetail;
   List<Store> _storeList = [];
   Store _selectedStore;
   List<GrnDetail> _grnDetailList = [];
+  List<GrnContainer> _grnContainerList = [];
   int _docGrnId;
 
   String refNo = '', remark = '';
-  int containerTtl, sampleBagTtl;
 
   bool get isLoading => _isLoading;
 
-  List<DocPoDetail> get docPODetailList => _docPODetailList;
+  List<DocPoDetail> get docPODetailList => _docPoDetailList;
+
+  List<DocPoContainer> get docPoContainerList => _docPoContainerList;
 
   DocPoDetail get selectedDocPODetail => _selectedDocPODetail;
 
@@ -40,15 +44,11 @@ class DocPoViewNotifier with ChangeNotifier {
 
   List<GrnDetail> get grnDetailList => _grnDetailList;
 
-  Stream<String> get errMsgStream => _errMsgSubject.stream;
+  List<GrnContainer> get grnContainerList => _grnContainerList;
 
-  @override
-  void dispose() {
-    _errMsgSubject.close();
-    super.dispose();
-  }
+  final SimpleAlertDialogMixin mixin;
 
-  DocPoViewNotifier({@required this.docPO}) {
+  DocPoViewNotifier(this.mixin, {@required this.docPO}) {
     _init();
   }
 
@@ -56,11 +56,16 @@ class DocPoViewNotifier with ChangeNotifier {
     try {
       final resPODetailList = await Api().dio.get('', queryParameters: {
         'r': 'apiMobileFmGrn/getdata',
-        'type': 'po_detail_list',
+        'type': 'po_detail_container_list',
         'id': docPO.id
       });
       final rpdl = Map<String, dynamic>.from(resPODetailList.data);
-      _docPODetailList = List<DocPoDetail>.from(rpdl['list'].map((r) => DocPoDetail.fromJson(r)));
+      _docPoDetailList =
+          List<DocPoDetail>.from(rpdl['detail_list'].map((r) => DocPoDetail.fromJson(r)));
+
+      _docPoContainerList = List<DocPoContainer>.from(rpdl['container'
+              '_list']
+          .map((r) => DocPoContainer.fromJson(r)));
 
       final resStoreList = await Api()
           .dio
@@ -71,8 +76,7 @@ class DocPoViewNotifier with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _errMsgSubject.add(formatApiErrorMsg(e));
-      _errMsgSubject.add(null);
+      mixin.onDialogMessage('Error', formatApiErrorMsg(e));
     }
   }
 
@@ -110,40 +114,36 @@ class DocPoViewNotifier with ChangeNotifier {
     notifyListeners();
   }
 
+  addGrnContainer(GrnContainer grnContainer) {
+    _grnContainerList.removeWhere((g) {
+      return g.containerNo == grnContainer.containerNo;
+    });
+
+    _grnContainerList.add(grnContainer);
+    notifyListeners();
+  }
+
+  removeGrnContainer(GrnContainer grnContainer) {
+    _grnContainerList.removeWhere((g) {
+      return g.containerNo == grnContainer.containerNo;
+    });
+
+    notifyListeners();
+  }
+
   Future<bool> preSaveGrn() async {
     if (refNo == '' || refNo == null) {
-      _errMsgSubject.add('Please enter supplier ref / DO');
-      _errMsgSubject.add(null);
+      mixin.onDialogMessage('Error', 'Please enter supplier ref / DO');
       return false;
     }
 
     if (_selectedStore == null) {
-      _errMsgSubject.add('Please select store');
-      _errMsgSubject.add(null);
+      mixin.onDialogMessage('Error', 'Please Please select store');
       return false;
     }
 
-//    if (containerTtl == 0 || containerTtl == null) {
-//      _errMsgSubject.add('Please enter container total');
-//      _errMsgSubject.add(null);
-//      return false;
-//    }
-//
-//    if (sampleBagTtl == 0 || sampleBagTtl == null) {
-//      _errMsgSubject.add('Please enter container total');
-//      _errMsgSubject.add(null);
-//      return false;
-//    }
-//
-//    if (remark == '' || remark == null) {
-//      _errMsgSubject.add('Please enter remark');
-//      _errMsgSubject.add(null);
-//      return false;
-//    }
-
     if (_grnDetailList.length == 0) {
-      _errMsgSubject.add('Please receive atleast 1 item');
-      _errMsgSubject.add(null);
+      mixin.onDialogMessage('Error', 'Please receive atleast 1 item');
       return false;
     }
     return true;
@@ -161,10 +161,9 @@ class DocPoViewNotifier with ChangeNotifier {
       docPoCheckId: docPO.docPoCheckId,
       refNo: refNo,
       storeId: _selectedStore.id,
-      containerTtl: containerTtl,
-      sampleBagTtl: sampleBagTtl,
       remark: remark,
       details: _grnDetailList,
+      containers: _grnContainerList
     );
 
     _isLoading = true;
@@ -183,8 +182,7 @@ class DocPoViewNotifier with ChangeNotifier {
       Fluttertoast.showToast(msg: "GRN saved");
       return true;
     } catch (e) {
-      _errMsgSubject.add(formatApiErrorMsg(e));
-      _errMsgSubject.add(null);
+      mixin.onDialogMessage('Error', formatApiErrorMsg(e));
       return false;
     } finally {
       _isLoading = false;

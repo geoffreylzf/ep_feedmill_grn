@@ -15,8 +15,12 @@ class DocGrn {
   String docNo;
   @JsonKey(name: 'doc_date')
   String docDate;
+  @JsonKey(name: 'po_doc_no')
+  String poDocNo;
   @JsonKey(name: 'supplier_name')
   String supplierName;
+  @JsonKey(name: 'supplier_ref_no')
+  String supplierRefNo;
   List<DocGrnDetail> details;
 
   DocGrn({
@@ -25,7 +29,9 @@ class DocGrn {
     this.companyRegNo,
     this.docNo,
     this.docDate,
+    this.poDocNo,
     this.supplierName,
+    this.supplierRefNo,
     this.details,
   });
 
