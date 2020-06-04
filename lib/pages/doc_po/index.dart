@@ -158,25 +158,50 @@ class POHeader extends StatelessWidget {
                       po.supplierName,
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
-                            child: Icon(Icons.location_on, size: 12),
-                          ),
-                          Text(po.locationName,
-                              style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-                        ],
-                        mainAxisAlignment: MainAxisAlignment.end,
-                      ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8, top: 2, bottom: 2),
+                          child: Icon(Icons.location_on, size: 12),
+                        ),
+                        Text(po.locationName,
+                            style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.end,
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8, top: 2, bottom: 2),
+                          child: Icon(Icons.timer, size: 12),
+                        ),
+                        Text(po.tripNo.toString(),
+                            style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.end,
                     ),
                   ],
                 ),
               )
             ],
           ),
+          if (po.tripNo % 10 == 1)
+            Container(
+              margin: const EdgeInsets.all(4),
+              width: double.infinity,
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.red,
+              ),
+              child: Center(
+                child: Text(
+                  "Trip : " + po.tripNo.toString() + " ~ Sample Needed",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
           Container(height: 8),
           Table(
             border: TableBorder.all(color: Colors.grey[300]),

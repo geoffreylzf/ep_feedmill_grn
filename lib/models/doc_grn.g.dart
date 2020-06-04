@@ -15,11 +15,11 @@ DocGrn _$DocGrnFromJson(Map<String, dynamic> json) {
     docDate: json['doc_date'] as String,
     poDocNo: json['po_doc_no'] as String,
     supplierName: json['supplier_name'] as String,
+    supplierRefNo: json['supplier_ref_no'] as String,
     details: (json['details'] as List)
         ?.map((e) =>
             e == null ? null : DocGrnDetail.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    supplierRefNo: json['supplier_ref_no'] as String,
   );
 }
 
