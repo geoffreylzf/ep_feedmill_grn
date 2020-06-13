@@ -358,7 +358,13 @@ class PODetail extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child:
-                Text("Purchase Order Detail", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text("Purchase Order Detail", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                    Text("* Require Sample", style: TextStyle(fontSize: 10, color: Colors.red)),
+                  ],
+                ),
           ),
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
@@ -423,8 +429,9 @@ class PODetail extends StatelessWidget {
                                 Expanded(
                                   child: Column(
                                     children: <Widget>[
-                                      Text(dt.skuName ?? '',
-                                          style: TextStyle(fontWeight: FontWeight.w700)),
+                                      Text((dt.skuName ?? '') + (dt.isSampleNeed ? " *" : ''),
+                                          style: TextStyle(fontWeight: FontWeight.w700,
+                                          color: dt.isSampleNeed ? Colors.red : Colors.black)),
                                       Text(dt.skuCode ?? '',
                                           style:
                                               TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),

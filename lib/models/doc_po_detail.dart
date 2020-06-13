@@ -17,6 +17,8 @@ class DocPoDetail {
   @JsonKey(name: 'uom_desc')
   String uomDesc;
   double factor;
+  @JsonKey(name: 'is_sample_need')
+  bool isSampleNeed;
   double qty;
   double weight;
   @JsonKey(name: 'grn_qty')
@@ -36,6 +38,7 @@ class DocPoDetail {
     this.uomCode,
     this.uomDesc,
     this.factor,
+    this.isSampleNeed,
     this.qty,
     this.weight,
     this.grnQty,

@@ -167,6 +167,23 @@ class _DocPoListState extends State<DocPoList> {
                                   ],
                                   mainAxisAlignment: MainAxisAlignment.end,
                                 ),
+                                if (po.tripNo % 10 == 1)
+                                  Container(
+                                    margin: const EdgeInsets.all(4),
+                                    width: double.infinity,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: Colors.red,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Trip : " + po.tripNo.toString() + " ~ Sample Needed",
+                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           )
