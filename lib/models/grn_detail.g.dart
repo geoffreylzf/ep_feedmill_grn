@@ -15,6 +15,12 @@ GrnDetail _$GrnDetailFromJson(Map<String, dynamic> json) {
     manufactureDate: json['manufacture_date'] as String,
     expireDate: json['expire_date'] as String,
     sampleBagTtl: json['sample_bag_ttl'] as int,
+    pcOdour: json['pc_odour'] as int,
+    pcColour: json['pc_colour'] as int,
+    pcSew: json['pc_sew'] as int,
+    pcLabel: json['pc_label'] as int,
+    pcAppear: json['pc_appear'] as int,
+    pcRemark: json['pc_remark'] as String,
   );
 }
 
@@ -26,4 +32,10 @@ Map<String, dynamic> _$GrnDetailToJson(GrnDetail instance) => <String, dynamic>{
       'manufacture_date': instance.manufactureDate,
       'expire_date': instance.expireDate,
       'sample_bag_ttl': instance.sampleBagTtl,
+      'pc_odour': instance.pcOdour,
+      'pc_colour': instance.pcColour,
+      'pc_sew': instance.pcSew,
+      'pc_label': instance.pcLabel,
+      'pc_appear': instance.pcAppear,
+      'pc_remark': instance.pcRemark,
     };

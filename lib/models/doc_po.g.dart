@@ -26,6 +26,7 @@ DocPo _$DocPoFromJson(Map<String, dynamic> json) {
     weightBridgeNo: json['weight_bridge_no'] as String,
     remark: json['remark'] as String,
     tripNo: json['trip_no'] as int,
+    csrNo: json['csr_no'] as String,
   );
 }
 
@@ -48,4 +49,5 @@ Map<String, dynamic> _$DocPoToJson(DocPo instance) => <String, dynamic>{
       'weight_bridge_no': instance.weightBridgeNo,
       'remark': instance.remark,
       'trip_no': instance.tripNo,
+      'csr_no': instance.csrNo,
     };

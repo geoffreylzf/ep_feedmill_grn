@@ -194,17 +194,20 @@ class _DocPoListState extends State<DocPoList> {
                         border: TableBorder.all(color: Colors.grey[300]),
                         columnWidths: {
                           0: FractionColumnWidth(0.2),
-                          1: FractionColumnWidth(0.25),
-                          2: FractionColumnWidth(0.55),
+                          1: FractionColumnWidth(0.2),
+                          2: FractionColumnWidth(0.2),
+                          3: FractionColumnWidth(0.4),
                         },
                         children: [
                           TableRow(children: [
                             TableHeaderCell('Truck No'),
-                            TableHeaderCell('Weight Bridge No'),
-                            TableHeaderCell('Weight Bridge Remark'),
+                            TableHeaderCell('Csr No'),
+                            TableHeaderCell('W.B. No'),
+                            TableHeaderCell('W.B. Remark'),
                           ]),
                           TableRow(children: [
                             TableDetailCell(po.truckNo ?? ''),
+                            TableDetailCell(po.csrNo ?? ''),
                             TableDetailCell(po.weightBridgeNo ?? ''),
                             TableDetailCell(po.remark ?? ''),
                           ]),

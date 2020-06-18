@@ -15,7 +15,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Eng Peng Feedmill GRN"
         android:usesCleartextTraffic="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/ep_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

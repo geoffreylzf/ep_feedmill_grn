@@ -1,6 +1,7 @@
 import 'package:ep_grn/models/doc_po_detail.dart';
 import 'package:ep_grn/models/grn_detail.dart';
 import 'package:ep_grn/notifiers/doc_po_view_notifier.dart';
+import 'package:ep_grn/pages/doc_po/physical_check_radio_btn.dart';
 import 'package:ep_grn/utils/table.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -96,6 +97,12 @@ class _DetailEntryState extends State<DetailEntry> {
   final tecManufactureDate = TextEditingController();
   final tecExpireDate = TextEditingController();
   final tecSampleBagTtl = TextEditingController();
+  final tecPcRemark = TextEditingController();
+  var pcOdour = 0;
+  var pcColour = 0;
+  var pcSew = 0;
+  var pcLabel = 0;
+  var pcAppear = 0;
 
   DocPoDetail dt;
 
@@ -119,6 +126,8 @@ class _DetailEntryState extends State<DetailEntry> {
     tecManufactureDate.dispose();
     tecExpireDate.dispose();
     tecSampleBagTtl.dispose();
+    tecPcRemark.dispose();
+
     super.dispose();
   }
 
@@ -133,6 +142,14 @@ class _DetailEntryState extends State<DetailEntry> {
       tecWeight.text = grnDt.weight.toString();
       tecManufactureDate.text = grnDt.manufactureDate.toString();
       tecExpireDate.text = grnDt.expireDate.toString();
+      tecSampleBagTtl.text = grnDt.sampleBagTtl.toString();
+
+      pcOdour = grnDt.pcOdour;
+      pcColour = grnDt.pcColour;
+      pcSew = grnDt.pcSew;
+      pcLabel = grnDt.pcLabel;
+      pcAppear = grnDt.pcAppear;
+      tecPcRemark.text = grnDt.pcRemark;
     }
 
     return Padding(
@@ -281,6 +298,92 @@ class _DetailEntryState extends State<DetailEntry> {
                 ),
               ],
             ),
+            Container(height: 8),
+            Column(
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  color: Colors.grey[700],
+                  height: 24,
+                  child: Center(
+                    child: Text(
+                      "Physical Check",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.grey[700]),
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      IntrinsicHeight(
+                        child: Row(children: [
+                          Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                PhysicalCheckRadioBtn(
+                                  title: "Odour",
+                                  defaultValue: pcOdour,
+                                  callback: (v) => pcOdour = v,
+                                ),
+                                Divider(color: Colors.grey[700], height: 1),
+                                PhysicalCheckRadioBtn(
+                                  title: "Sew",
+                                  defaultValue: pcSew,
+                                  callback: (v) => pcSew = v,
+                                ),
+                                Divider(color: Colors.grey[700], height: 1),
+                                PhysicalCheckRadioBtn(
+                                  title: "Appear",
+                                  defaultValue: pcSew,
+                                  callback: (v) => pcSew = v,
+                                ),
+                              ],
+                            ),
+                          ),
+                          VerticalDivider(
+                            color: Colors.grey[700],
+                            thickness: 1,
+                            width: 1,
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                PhysicalCheckRadioBtn(
+                                  title: "Colour",
+                                  defaultValue: pcColour,
+                                  callback: (v) => pcColour = v,
+                                ),
+                                Divider(color: Colors.grey[700], height: 1),
+                                PhysicalCheckRadioBtn(
+                                  title: "Label",
+                                  defaultValue: pcLabel,
+                                  callback: (v) => pcLabel = v,
+                                ),
+                                Divider(color: Colors.grey[700], height: 1),
+                                TextFormField(
+                                  controller: tecPcRemark,
+                                  autofocus: true,
+                                  maxLength: 250,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                    labelText: "Remark",
+                                    contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             Container(height: 16),
             Row(
               children: [
@@ -312,6 +415,12 @@ class _DetailEntryState extends State<DetailEntry> {
                           manufactureDate: tecManufactureDate.text,
                           expireDate: tecExpireDate.text,
                           sampleBagTtl: int.tryParse(tecSampleBagTtl.text),
+                          pcOdour: pcOdour,
+                          pcColour: pcColour,
+                          pcSew: pcSew,
+                          pcLabel: pcLabel,
+                          pcAppear: pcAppear,
+                          pcRemark: tecPcRemark.text,
                           skuCode: dt.skuCode,
                           skuName: dt.skuName,
                           uomCode: dt.uomCode,

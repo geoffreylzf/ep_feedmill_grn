@@ -16,6 +16,18 @@ class GrnDetail {
   String expireDate;
   @JsonKey(name: 'sample_bag_ttl', includeIfNull: true)
   int sampleBagTtl;
+  @JsonKey(name: 'pc_odour', includeIfNull: true)
+  int pcOdour;
+  @JsonKey(name: 'pc_colour', includeIfNull: true)
+  int pcColour;
+  @JsonKey(name: 'pc_sew', includeIfNull: true)
+  int pcSew;
+  @JsonKey(name: 'pc_label', includeIfNull: true)
+  int pcLabel;
+  @JsonKey(name: 'pc_appear', includeIfNull: true)
+  int pcAppear;
+  @JsonKey(name: 'pc_remark', includeIfNull: true)
+  String pcRemark;
 
   @JsonKey(ignore: true)
   String skuCode;
@@ -34,6 +46,13 @@ class GrnDetail {
     this.manufactureDate,
     this.expireDate,
     this.sampleBagTtl,
+    this.pcOdour,
+    this.pcColour,
+    this.pcSew,
+    this.pcLabel,
+    this.pcAppear,
+    this.pcRemark,
+
     this.skuCode,
     this.skuName,
     this.uomDesc,

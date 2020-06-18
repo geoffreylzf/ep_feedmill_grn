@@ -38,6 +38,8 @@ class DocPo {
   String remark;
   @JsonKey(name: 'trip_no')
   int tripNo;
+  @JsonKey(name: 'csr_no')
+  String csrNo;
 
   DocPo({
     this.id,
@@ -57,7 +59,8 @@ class DocPo {
     this.truckNo,
     this.weightBridgeNo,
     this.remark,
-    this.tripNo
+    this.tripNo,
+    this.csrNo,
   });
 
   factory DocPo.fromJson(Map<String, dynamic> json) => _$DocPoFromJson(json);

@@ -56,7 +56,7 @@ class _LoginFormState extends State<LoginForm> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FlutterLogo(size: 100),
+                child: Text("Eng Peng Feedmill GRN"),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
