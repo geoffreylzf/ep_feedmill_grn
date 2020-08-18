@@ -185,23 +185,6 @@ class POHeader extends StatelessWidget {
               )
             ],
           ),
-          if (po.tripNo % 10 == 1)
-            Container(
-              margin: const EdgeInsets.all(4),
-              width: double.infinity,
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.red,
-              ),
-              child: Center(
-                child: Text(
-                  "Trip : " + po.tripNo.toString() + " ~ Sample Needed",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
           Container(height: 8),
           Table(
             border: TableBorder.all(color: Colors.grey[300]),
@@ -351,6 +334,7 @@ class _POHeaderEntryState extends State<POHeaderEntry> {
 class PODetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final doc = Provider.of<DocPoViewNotifier>(context).docPO;
     final dtList = Provider.of<DocPoViewNotifier>(context).docPODetailList;
 
     return Container(
@@ -360,14 +344,13 @@ class PODetail extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child:
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text("Purchase Order Detail", style: TextStyle(fontSize: 10, color: Colors.grey)),
-                    Text("* Require Sample", style: TextStyle(fontSize: 10, color: Colors.red)),
-                  ],
-                ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("Purchase Order Detail", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                Text("* Require Sample", style: TextStyle(fontSize: 10, color: Colors.red)),
+              ],
+            ),
           ),
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
@@ -379,6 +362,11 @@ class PODetail extends StatelessWidget {
             itemBuilder: (ctx, index) {
               final dt = dtList[index];
               final grnDt = Provider.of<DocPoViewNotifier>(context).getGrnDetail(dt);
+
+              final isRequireSample = dt.isSampleNeed &&
+                  ((dt.isSelectedTrip == true && doc.tripNo % 10 == 1) ||
+                      dt.isSelectedTrip == false);
+
               return InkWell(
                 splashColor: Theme.of(context).accentColor,
                 onTap: dt.balQty <= 0
@@ -432,9 +420,10 @@ class PODetail extends StatelessWidget {
                                 Expanded(
                                   child: Column(
                                     children: <Widget>[
-                                      Text((dt.skuName ?? '') + (dt.isSampleNeed ? " *" : ''),
-                                          style: TextStyle(fontWeight: FontWeight.w700,
-                                          color: dt.isSampleNeed ? Colors.red : Colors.black)),
+                                      Text((dt.skuName ?? '') + (isRequireSample ? " *" : ''),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              color: isRequireSample ? Colors.red : Colors.black)),
                                       Text(dt.skuCode ?? '',
                                           style:
                                               TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),

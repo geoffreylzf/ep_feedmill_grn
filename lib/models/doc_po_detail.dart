@@ -19,6 +19,8 @@ class DocPoDetail {
   double factor;
   @JsonKey(name: 'is_sample_need')
   bool isSampleNeed;
+  @JsonKey(name: 'is_selected_trip')
+  bool isSelectedTrip;
   double qty;
   double weight;
   @JsonKey(name: 'grn_qty')
@@ -39,6 +41,7 @@ class DocPoDetail {
     this.uomDesc,
     this.factor,
     this.isSampleNeed,
+    this.isSelectedTrip,
     this.qty,
     this.weight,
     this.grnQty,

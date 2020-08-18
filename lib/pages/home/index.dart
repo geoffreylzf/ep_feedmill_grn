@@ -156,34 +156,25 @@ class _DocPoListState extends State<DocPoList> {
                                   ],
                                   mainAxisAlignment: MainAxisAlignment.end,
                                 ),
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8, top: 2, bottom: 2),
-                                      child: Icon(Icons.timer, size: 12),
-                                    ),
-                                    Text(po.tripNo.toString(),
-                                        style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-                                  ],
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                ),
-                                if (po.tripNo % 10 == 1)
-                                  Container(
-                                    margin: const EdgeInsets.all(4),
-                                    width: double.infinity,
-                                    height: 24,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
-                                      color: Colors.red,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "Trip : " + po.tripNo.toString() + " ~ Sample Needed",
-                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
-                                        textAlign: TextAlign.center,
-                                      ),
+                                Container(
+                                  margin: const EdgeInsets.all(4),
+                                  width: double.infinity,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: Colors.red,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Trip #" + po.tripNo.toString(),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
+                                ),
                               ],
                             ),
                           )
