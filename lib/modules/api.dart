@@ -41,7 +41,7 @@ class Api {
         return error;
       }),
     );
-    //_dio.interceptors.add(LogInterceptor());
+    _dio.interceptors.add(LogInterceptor());
   }
 
   Dio get dio => _dio;
