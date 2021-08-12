@@ -30,7 +30,7 @@ class DocPoListNotifier with ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      final response = await Api().dio.get('', queryParameters: {
+      final response = await (await Api().dio).get('', queryParameters: {
         'r': 'apiMobileFmGrn/getdata',
         'type': 'po_list',
       });

@@ -57,7 +57,7 @@ class UserRepositoryNotifier with ChangeNotifier {
       notifyListeners();
       await Future.delayed(Duration(seconds: 1));
       await _uc.setInfo(username, password);
-      await Api().dio.get('', queryParameters: {'r': 'apiMobileAuth/loginV2'});
+      await (await Api().dio).get('', queryParameters: {'r': 'apiMobileAuth/loginV2'});
       await getUserProfile();
       _status = Status.Authenticated;
       return null;
@@ -71,7 +71,7 @@ class UserRepositoryNotifier with ChangeNotifier {
   }
 
   Future<void> getUserProfile() async {
-    final response = await Api().dio.get('', queryParameters: {'r': 'apiMobileAuth/profile'});
+    final response = await (await Api().dio).get('', queryParameters: {'r': 'apiMobileAuth/profile'});
     _userProfile = UserProfile.fromJson(response.data);
   }
 

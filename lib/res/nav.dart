@@ -1,6 +1,8 @@
 import 'package:ep_grn/animation/route_slide_right.dart';
 import 'package:ep_grn/notifiers/user_repository_notifier.dart';
 import 'package:ep_grn/pages/doc_grn/index.dart';
+import 'package:ep_grn/pages/setting.dart';
+import 'package:ep_grn/pages/update_app_ver.dart';
 import 'package:ep_grn/widgets/simple_confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +53,28 @@ class NavDrawerStart extends StatelessWidget {
               Navigator.push(
                 context,
                 SlideRightRoute(widget: DocGrnIndexPage()),
+              );
+            },
+          ),
+          ListTile(
+            dense: true,
+            leading: Icon(Icons.settings),
+            title: Text('Setting'),
+            onTap: () async {
+              Navigator.push(
+                context,
+                SlideRightRoute(widget: SettingsPage()),
+              );
+            },
+          ),
+          ListTile(
+            dense: true,
+            leading: Icon(Icons.update),
+            title: Text('Update App Version'),
+            onTap: () async {
+              Navigator.push(
+                context,
+                SlideRightRoute(widget: UpdateAppVerPage()),
               );
             },
           ),

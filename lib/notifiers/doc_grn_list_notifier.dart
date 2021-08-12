@@ -39,7 +39,7 @@ class DocGrnListNotifier with ChangeNotifier {
       _isLoading = true;
       _filter = filter;
       notifyListeners();
-      final response = await Api().dio.get('', queryParameters: {
+      final response = await (await Api().dio).get('', queryParameters: {
         'r': 'apiMobileFmGrn/lookup',
         'type': 'grn_list',
         'filter': _filter,
@@ -60,7 +60,7 @@ class DocGrnListNotifier with ChangeNotifier {
       _isLoading = true;
       notifyListeners();
       _page = 1;
-      final response = await Api().dio.get('', queryParameters: {
+      final response = await (await Api().dio).get('', queryParameters: {
         'r': 'apiMobileFmGrn/lookup',
         'type': 'grn_list',
         'page': _page,
@@ -82,7 +82,7 @@ class DocGrnListNotifier with ChangeNotifier {
       _isLoading = true;
       notifyListeners();
       _page++;
-      final response = await Api().dio.get('', queryParameters: {
+      final response = await (await Api().dio).get('', queryParameters: {
         'r': 'apiMobileFmGrn/lookup',
         'type': 'grn_list',
         'page': _page,
@@ -104,7 +104,7 @@ class DocGrnListNotifier with ChangeNotifier {
   Future<String> printGrn(int id) async {
     _isGeneratingReceipt = true;
     notifyListeners();
-    final response = await Api().dio.get('', queryParameters: {
+    final response = await (await Api().dio).get('', queryParameters: {
       'r': 'apiMobileFmGrn/lookup',
       'type': 'grn',
       'id': id,

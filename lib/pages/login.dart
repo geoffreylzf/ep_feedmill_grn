@@ -1,3 +1,4 @@
+import 'package:ep_grn/notifiers/local_notifier.dart';
 import 'package:ep_grn/notifiers/user_repository_notifier.dart';
 import 'package:ep_grn/widgets/simple_alert_dialog.dart';
 import 'package:ep_grn/widgets/simple_loading_dialog.dart';
@@ -15,7 +16,14 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(children: [
         Center(
-          child: LoginForm(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LoginForm(),
+              LocalCheckBox(),
+            ],
+          ),
         ),
         Consumer<UserRepositoryNotifier>(
           builder: (ctx, user, _) {
@@ -23,6 +31,42 @@ class _LoginPageState extends State<LoginPage> {
           },
         ),
       ]),
+    );
+  }
+}
+
+class LocalCheckBox extends StatefulWidget {
+  @override
+  _LocalCheckBoxState createState() => _LocalCheckBoxState();
+}
+
+class _LocalCheckBoxState extends State<LocalCheckBox> {
+  @override
+  Widget build(BuildContext context) {
+    final bloc = Provider.of<LocalNotifier>(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        StreamBuilder<bool>(
+            stream: bloc.localCheckedStream,
+            initialData: false,
+            builder: (context, snapshot) {
+              return Checkbox(
+                value: snapshot.data,
+                onChanged: (bool b) {
+                  bloc.setLocalChecked(b);
+                },
+              );
+            }),
+        Flexible(
+          fit: FlexFit.loose,
+          child: Text(
+            "Local (Connect Office Wi-Fi)",
+            overflow: TextOverflow.clip,
+          ),
+        ),
+      ],
     );
   }
 }

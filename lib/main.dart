@@ -1,4 +1,5 @@
 import 'package:ep_grn/notifiers/doc_po_list_notifier.dart';
+import 'package:ep_grn/notifiers/local_notifier.dart';
 import 'package:ep_grn/notifiers/user_repository_notifier.dart';
 import 'package:ep_grn/pages/home/index.dart';
 import 'package:ep_grn/pages/login.dart';
@@ -14,6 +15,9 @@ void main() => runApp(
           ),
           ChangeNotifierProvider(
             create: (_) => DocPoListNotifier(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => LocalNotifier(),
           ),
         ],
         child: MyApp(),

@@ -54,7 +54,7 @@ class DocPoViewNotifier with ChangeNotifier {
 
   _init() async {
     try {
-      final resPODetailList = await Api().dio.get('', queryParameters: {
+      final resPODetailList = await (await Api().dio).get('', queryParameters: {
         'r': 'apiMobileFmGrn/getdata',
         'type': 'po_detail_container_list',
         'id': docPO.id
@@ -67,8 +67,7 @@ class DocPoViewNotifier with ChangeNotifier {
               '_list']
           .map((r) => DocPoContainer.fromJson(r)));
 
-      final resStoreList = await Api()
-          .dio
+      final resStoreList = await (await Api().dio)
           .get('', queryParameters: {'r': 'apiMobileFmGrn/lookup', 'type': 'store_list'});
       final rsl = Map<String, dynamic>.from(resStoreList.data);
       _storeList = List<Store>.from(rsl['list'].map((r) => Store.fromJson(r)));
@@ -156,26 +155,25 @@ class DocPoViewNotifier with ChangeNotifier {
     }
 
     final grn = Grn(
-      companyId: docPO.companyId,
-      docPoId: docPO.id,
-      docPoCheckId: docPO.docPoCheckId,
-      refNo: refNo,
-      storeId: _selectedStore.id,
-      remark: remark,
-      details: _grnDetailList,
-      containers: _grnContainerList
-    );
+        companyId: docPO.companyId,
+        docPoId: docPO.id,
+        docPoCheckId: docPO.docPoCheckId,
+        refNo: refNo,
+        storeId: _selectedStore.id,
+        remark: remark,
+        details: _grnDetailList,
+        containers: _grnContainerList);
 
     _isLoading = true;
     notifyListeners();
     try {
       final grnJson = {'grn': grn.toJson()};
       print(json.encode(grnJson));
-      final res = await Api().dio.post(
-            '',
-            queryParameters: {'r': 'apiMobileFmGrn/saveGrn'},
-            data: grnJson,
-          );
+      final res = await (await Api().dio).post(
+        '',
+        queryParameters: {'r': 'apiMobileFmGrn/saveGrn'},
+        data: grnJson,
+      );
       final data = Map<String, dynamic>.from(res.data);
       print(data['doc_grn_id'].runtimeType.toString());
       _docGrnId = data['doc_grn_id'];
@@ -193,7 +191,7 @@ class DocPoViewNotifier with ChangeNotifier {
   Future<String> printGrn() async {
     _isLoading = true;
     notifyListeners();
-    final response = await Api().dio.get('', queryParameters: {
+    final response = await (await Api().dio).get('', queryParameters: {
       'r': 'apiMobileFmGrn/lookup',
       'type': 'grn',
       'id': _docGrnId,

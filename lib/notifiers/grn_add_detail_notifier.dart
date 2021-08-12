@@ -36,7 +36,7 @@ class GrnAddDetailNotifier with ChangeNotifier {
       _selectedItemPacking = null;
       _isLoading = true;
       notifyListeners();
-      final response = await Api().dio.get('', queryParameters: {
+      final response = await (await Api().dio).get('', queryParameters: {
         'r': 'apiMobileFmGrn/lookup',
         'type': 'item_packing_list',
         'filter': filter,

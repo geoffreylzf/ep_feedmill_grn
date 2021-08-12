@@ -1,3 +1,4 @@
+import 'package:ep_grn/notifiers/local_notifier.dart';
 import 'package:ep_grn/notifiers/user_repository_notifier.dart';
 import 'package:ep_grn/widgets/simple_alert_dialog.dart';
 import 'package:flutter/material.dart';
@@ -63,20 +64,64 @@ class _SplashPageState extends State<SplashPage> {
                 if(snapshot.data){
                   return Align(
                     alignment: Alignment(0, 0.5),
-                    child: FloatingActionButton(
-                      child: Icon(Icons.refresh),
-                      tooltip: 'Refresh',
-                      onPressed: () {
-                        initUserRepository();
-                      },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        FloatingActionButton(
+                          child: Icon(Icons.refresh),
+                          tooltip: 'Refresh',
+                          onPressed: () {
+                            initUserRepository();
+                          },
+                        ),
+                        LocalCheckBox(),
+                      ],
                     ),
                   );
                 }
                 return Container();
               }
           ),
+
         ],
       ),
+    );
+  }
+}
+
+
+class LocalCheckBox extends StatefulWidget {
+  @override
+  _LocalCheckBoxState createState() => _LocalCheckBoxState();
+}
+
+class _LocalCheckBoxState extends State<LocalCheckBox> {
+  @override
+  Widget build(BuildContext context) {
+    final bloc = Provider.of<LocalNotifier>(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        StreamBuilder<bool>(
+            stream: bloc.localCheckedStream,
+            initialData: false,
+            builder: (context, snapshot) {
+              return Checkbox(
+                value: snapshot.data,
+                onChanged: (bool b) {
+                  bloc.setLocalChecked(b);
+                },
+              );
+            }),
+        Flexible(
+          fit: FlexFit.loose,
+          child: Text(
+            "Local (Connect Office Wi-Fi)",
+            overflow: TextOverflow.clip,
+          ),
+        ),
+      ],
     );
   }
 }

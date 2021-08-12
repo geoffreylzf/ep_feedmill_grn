@@ -11,7 +11,7 @@ description: Engpeng group good receive note entry
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.2+3
+version: 2.1.0+5
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -30,6 +30,9 @@ dependencies:
   font_awesome_flutter: ^8.7.0
   intl: ^0.16.1
   fluttertoast: ^3.1.3
+  package_info: ^0.4.0+3
+  url_launcher: ^5.7.10
+
 
 dev_dependencies:
   flutter_test:
@@ -42,3 +45,5 @@ flutter:
   uses-material-design: true
 
 #1.0.1+2 add csr_no, physical checking fields for detail item and remove add detail item
+#2.0.1+4 remove google play
+#2.1.0+5 20210812 add local url setting
