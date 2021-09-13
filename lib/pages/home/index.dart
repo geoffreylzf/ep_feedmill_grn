@@ -194,14 +194,20 @@ class _DocPoListState extends State<DocPoList> {
                             TableHeaderCell('Truck No'),
                             TableHeaderCell('Csr No'),
                             TableHeaderCell('W.B. No'),
-                            TableHeaderCell('W.B. Remark'),
+                            TableHeaderCell('Container No'),
                           ]),
                           TableRow(children: [
                             TableDetailCell(po.truckNo ?? ''),
                             TableDetailCell(po.csrNo ?? ''),
                             TableDetailCell(po.weightBridgeNo ?? ''),
-                            TableDetailCell(po.remark ?? ''),
+                            TableDetailCell(po.containerNo ?? ''),
                           ]),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.comment, size: 16),
+                          Text(po.remark ?? ''),
                         ],
                       ),
                     ],
